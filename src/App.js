@@ -1,25 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import MapChart from "./MapChart";
+import Ranking from "./Ranking";
+import ReactTooltip from "react-tooltip";
+import CSVReader from 'react-csv-reader'
 
 function App() {
+  const [content, setContent] = useState("")
+  const [data, setData] = useState(JSON.parse(localStorage.getItem('dataSet')) || []);
+
+  const loadData = (data) => {
+    setData(data)
+    localStorage.setItem('dataSet', JSON.stringify(data));
+  }
+
+  const papaparseOptions = {
+    header: true,
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <h1>Time by country</h1>
+      <CSVReader onFileLoaded={(data, fileInfo) => loadData(data, fileInfo)} parserOptions={papaparseOptions}/>
+      <div className="flex-container">
+        <div style={{flexGrow: 8}}>
+          <MapChart setTooltipContent={setContent} travelData={data} />
+          <ReactTooltip>{content}</ReactTooltip>
+        </div>
+        <div style={{flexGrow: 1}}>
+          {data && <Ranking countries={data} />}
+        </div> 
+      </div>
+    </>
   );
 }
 
