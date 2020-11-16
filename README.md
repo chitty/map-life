@@ -1,3 +1,3 @@
-# Time by country
+# Time spent by country
 
-Visualization tool that displays in which countries a person has spent their life.
+Quick snapshot showing where in the world you have been according to the submitted data.
