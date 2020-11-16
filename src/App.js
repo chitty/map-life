@@ -12,10 +12,20 @@ function App() {
     JSON.parse(localStorage.getItem("dataSet")) || []
   );
   const [topN, setTopN] = useState(5);
+  const [CSVFormatError, setCSVFormatError] = useState(null);
 
   const loadData = (data) => {
-    setData(data);
-    localStorage.setItem("dataSet", JSON.stringify(data));
+    const valid = data.reduce((acc, row) => {
+      return acc && row.time && row.ISO3 && row.time && row.name;
+    }, true);
+    if (valid) {
+      setData(data);
+      localStorage.setItem("dataSet", JSON.stringify(data));
+    } else {
+      setCSVFormatError(
+        "Invalid format, please make sure the file has headers 'name', 'time' and 'ISO3'."
+      );
+    }
   };
 
   const papaparseOptions = {
@@ -44,6 +54,9 @@ function App() {
             onFileLoaded={(data, fileInfo) => loadData(data, fileInfo)}
             parserOptions={papaparseOptions}
           />
+          {CSVFormatError && (
+            <strong className="error-msg">{CSVFormatError}</strong>
+          )}
         </>
       )}
     </div>
