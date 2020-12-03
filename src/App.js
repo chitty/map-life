@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import MapChart from "./components/MapChart";
 import Ranking from "./components/Ranking";
 import Buttons from "./components/Buttons";
+import { SampleData } from "./data/SampleData";
 import ReactTooltip from "react-tooltip";
 import CSVReader from "react-csv-reader";
 
@@ -13,6 +14,10 @@ function App() {
   );
   const [topN, setTopN] = useState(5);
   const [CSVFormatError, setCSVFormatError] = useState(null);
+
+  useEffect(() => {
+      loadData(SampleData)
+  }, [])
 
   const loadData = (data) => {
     const valid = data.reduce((acc, row) => {
@@ -28,17 +33,27 @@ function App() {
     }
   };
 
+  const clearData = () => {
+    localStorage.removeItem("dataSet");
+    setData([])
+  }
+
   const papaparseOptions = {
     header: true,
   };
 
   return (
     <div className="container">
-      <h1>Time spent by country</h1>
+      <h1 className="center">Time spent by country</h1>
       {data.length > 0 ? (
         <>
-          <Buttons topN={topN} setTopN={setTopN} />
-          <Ranking countries={data} topN={topN} />
+          <div className="center">
+            <Buttons topN={topN} setTopN={setTopN} />
+              <button className="button" onClick={() => clearData()}>
+                New data
+              </button>
+            <Ranking countries={data} topN={topN} />
+          </div>
           <div>
             <MapChart setTooltipContent={setContent} travelData={data} />
             <ReactTooltip>{content}</ReactTooltip>

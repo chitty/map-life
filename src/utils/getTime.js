@@ -2,7 +2,7 @@ export const getTime = (data) => {
   const years =
     data && data.Years ? pluralize(` ${data.Years} year`, data.Years) : "";
   const months =
-    data && data.Months ? pluralize(` ${data.Months} month`, data.Months) : "";
+    data && data.Months && data.Months !== "0" ? pluralize(` ${data.Months} month`, data.Months) : "";
   const days = data
     ? data.Days === "0"
       ? ""
