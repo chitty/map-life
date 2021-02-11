@@ -92,6 +92,8 @@ function App() {
           <CSVReader
             onFileLoaded={(data, fileInfo) => loadData(data, fileInfo)}
             parserOptions={papaparseOptions}
+            label="Upload file"
+            cssLabelClass="button upload-button"
           />
           {CSVFormatError && (
             <strong className="error-msg">{CSVFormatError}</strong>

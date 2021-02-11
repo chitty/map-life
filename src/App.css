@@ -40,11 +40,43 @@ body {
   margin-bottom: 24px;
 }
 
-.button {
-  height: 24px;
-  padding: 4px;
-  margin: 8px;
+input[type="file"] {
+  display: none;
+}
+
+.upload-button {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
   cursor: pointer;
+}
+
+.button {
+  transition-duration: 0.4s;
+  background-color: white;
+  color: black;
+  border: 2px solid lightgray;
+  font-size: 16px;
+  font-family: "Nunito Sans", sans-serif;
+  padding: 8px 20px;
+  margin: 0 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button:hover {
+  background-color: lightgray;
+  color: white;
+}
+
+.button:disabled:hover {
+  background-color: white;
+  color: black;
 }
 
 .center {
