@@ -4,24 +4,39 @@ import { CountryISOMapping } from "../data/CountryISOMapping";
 import { getTime } from "../utils/getTime";
 
 const CountryCard = ({ rank, country, totalDays }) => {
-  const flag_filename = `https://flagcdn.com/w160/${CountryISOMapping[
+  const flag_filename = `https://flagcdn.com/h240/${CountryISOMapping[
     country.ISO3
   ].toLowerCase()}.png`;
   return (
     <div className="card">
-      <i>
-        #{rank} - {((100 * country.time) / totalDays).toFixed(2)}%
-      </i>
-      <img
-        className="flag"
-        src={flag_filename}
-        alt={`${country.name}'s flag`}
-      />
+      <div className="flag-container">
+        <img
+          className="flag"
+          src={flag_filename}
+          alt={`${country.name}'s flag`}
+        />
+      </div>
       <div className="card-container">
         <h4>
-          <b>{country.name}</b>
+          <b>
+            {rank}. {country.name}
+          </b>
         </h4>
-        <p>{getTime(country)}</p>
+
+        <div className="card-detail">
+          <b>Region:</b> {country.region}
+        </div>
+        <div className="card-detail">
+          <b>Capital:</b> {country.capital}
+        </div>
+        <div className="card-detail">
+          <b>Time: </b>
+          {getTime(country)}
+        </div>
+        <div className="percentage">
+          That's {((100 * country.time) / totalDays).toFixed(2)}% of your life
+          here!
+        </div>
       </div>
     </div>
   );

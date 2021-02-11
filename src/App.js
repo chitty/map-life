@@ -8,6 +8,7 @@ import ReactTooltip from "react-tooltip";
 import CSVReader from "react-csv-reader";
 
 function App() {
+  const API_URL = "https://restcountries.eu/rest/v2/alpha";
   const [content, setContent] = useState("");
   const [data, setData] = useState(
     JSON.parse(localStorage.getItem("dataSet")) || []
@@ -16,27 +17,50 @@ function App() {
   const [CSVFormatError, setCSVFormatError] = useState(null);
 
   useEffect(() => {
-      loadData(SampleData)
-  }, [])
+    if (!data || data.length < 1) loadData(SampleData);
+  }, []);
 
   const loadData = (data) => {
     const valid = data.reduce((acc, row) => {
-      return acc && row.time && row.ISO3 && row.time && row.name;
+      return acc && row.time && row.ISO3;
     }, true);
     if (valid) {
-      setData(data);
-      localStorage.setItem("dataSet", JSON.stringify(data));
+      const iso3 = data.reduce((acc, row) => {
+        return `${acc}${row.ISO3};`;
+      }, "");
+      fetch(`${API_URL}?codes=${iso3}`)
+        .then((res) => res.json())
+        .then(
+          (result) => {
+            let merged = [];
+
+            for (let i = 0; i < result.length; i++) {
+              merged.push({
+                ...result[i],
+                ...data.find(
+                  (itmInner) => itmInner.ISO3 === result[i].alpha3Code
+                ),
+              });
+            }
+            setData(merged);
+            localStorage.setItem("dataSet", JSON.stringify(merged));
+          },
+          (error) => {
+            console.log("Error fetching countries data: ", error);
+            setData(data);
+          }
+        );
     } else {
       setCSVFormatError(
-        "Invalid format, please make sure the file has headers 'name', 'time' and 'ISO3'."
+        "Invalid format, please make sure the file has headers 'time' and 'ISO3'."
       );
     }
   };
 
   const clearData = () => {
     localStorage.removeItem("dataSet");
-    setData([])
-  }
+    setData([]);
+  };
 
   const papaparseOptions = {
     header: true,
@@ -49,9 +73,9 @@ function App() {
         <>
           <div className="center">
             <Buttons topN={topN} setTopN={setTopN} />
-              <button className="button" onClick={() => clearData()}>
-                New data
-              </button>
+            <button className="button" onClick={() => clearData()}>
+              New data
+            </button>
             <Ranking countries={data} topN={topN} />
           </div>
           <div>

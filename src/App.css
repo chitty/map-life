@@ -22,40 +22,70 @@
 }
 
 .card {
-  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   transition: 0.3s;
-  width: 160px;
-  padding: 4px;
-  margin: 6px;
+  width: 240px;
+  margin: 35px;
+  border-radius: 4px;
+}
+
+.flag-container {
+  height: 160px;
 }
 
 .flag {
-  width: 100%;
-  height: 107px;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  height: 160px;
+  width: 240px;
   padding: 0;
 }
 
-@media only screen and (max-width: 600px) {
+.card-container {
+  padding-left: 16px;
+  padding-bottom: 16px;
+  text-align: left;
+}
+
+.card-detail {
+  font-size: 14px;
+  margin: 2px;
+}
+
+.percentage {
+  font-size: 12px;
+  padding: 2px;
+}
+
+@media only screen and (max-width: 768px) {
   .card {
-    width: 92px;
-    padding: 4px;
-    margin: 6px;
+    width: 120px;
+    margin: 12px;
+  }
+  .flag-container {
+    height: 80px;
   }
   .flag {
-    width: 100%;
-    height: 53px;
-    padding: 0;
+    height: 80px;
+    width: 120px;
+  }
+
+  .card-container {
+    padding-left: 8px;
+    padding-bottom: 8px;
+  }
+
+  .card-detail {
+    font-size: 12px;
+  }
+
+  .percentage {
+    font-size: 10px;
   }
 }
 
-
-
 .card:hover {
-  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-}
-
-.card-container {
-  padding: 0px 2px;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
 }
 
 .error-msg {
