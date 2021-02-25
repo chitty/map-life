@@ -11,7 +11,7 @@ const CountryCard = ({ rank, country, totalDays }) => {
   ].toLowerCase()}.png`;
   return (
     <Link
-      to={`/${country.ISO3}`}
+      to={`/country/${country.ISO3}`}
       onClick={() =>
         localStorage.setItem(country.ISO3, JSON.stringify(country))
       }

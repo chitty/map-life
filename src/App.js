@@ -8,7 +8,7 @@ function App() {
   return (
     <Router>
       <Switch>
-        <Route path="/:iso3">
+        <Route path="/country/:iso3">
           <CountryPage />
         </Route>
         <Route path="/">

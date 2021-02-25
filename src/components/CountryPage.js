@@ -101,7 +101,7 @@ const CountryPage = () => {
                   <div className="border-countries-list">
                     {country.borders.length
                       ? country.borders.map((border, i) => (
-                          <Link to={`/${border}`} key={i}>
+                          <Link to={`/country/${border}`} key={i}>
                             <button className="button border-country">
                               {border in CountryNameMapping
                                 ? CountryNameMapping[border]
