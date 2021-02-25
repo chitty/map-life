@@ -75,7 +75,7 @@ const HomePage = () => {
 
   return (
     <div className="container">
-      <h1 className="center">Time spent by country</h1>
+      <h1 className="center">Where in the world?</h1>
       {data.length > 0 ? (
         <>
           <div className="center">
