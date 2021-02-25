@@ -1,54 +1,9 @@
-@font-face {
-  font-family: "Nunito Sans";
-  src: local("Nunito Sans"),
-    url(./fonts/NunitoSans-Light.ttf) format("truetype");
-  font-weight: 300;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Nunito Sans";
-  src: local("Nunito Sans"),
-    url(./fonts/NunitoSans-SemiBold.ttf) format("truetype");
-  font-weight: 600;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Nunito Sans";
-  src: local("Nunito Sans"),
-    url(./fonts/NunitoSans-ExtraBold.ttf) format("truetype");
-  font-weight: 800;
-  font-style: normal;
-}
-
-body {
-  font-family: "Nunito Sans", sans-serif;
-  background-color: hsl(0, 0%, 98%);
-  color: hsl(200, 15%, 8%);
-}
-
 .container {
   margin: 16px;
 }
 
-.flex-container {
-  justify-content: center;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  margin-bottom: 24px;
-}
-
-input[type="file"] {
-  display: none;
-}
-
-.upload-button {
-  border: 1px solid #ccc;
-  display: inline-block;
-  padding: 6px 12px;
-  cursor: pointer;
+.center {
+  text-align: center;
 }
 
 .button {
@@ -59,7 +14,7 @@ input[type="file"] {
   font-size: 16px;
   font-family: "Nunito Sans", sans-serif;
   padding: 8px 20px;
-  margin: 0 12px;
+  margin: 5px 12px;
   border-radius: 4px;
   cursor: pointer;
 }
@@ -67,6 +22,11 @@ input[type="file"] {
 .button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.button:focus {
+  border-color: gray;
+  outline: gray auto 5px;
 }
 
 .button:hover {
@@ -77,79 +37,4 @@ input[type="file"] {
 .button:disabled:hover {
   background-color: white;
   color: black;
-}
-
-.center {
-  text-align: center;
-}
-
-.card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  transition: 0.3s;
-  width: 240px;
-  margin: 35px;
-  border-radius: 4px;
-}
-
-.flag-container {
-  height: 160px;
-}
-
-.flag {
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
-  height: 160px;
-  width: 240px;
-  padding: 0;
-}
-
-.card-container {
-  padding-left: 16px;
-  padding-bottom: 16px;
-  text-align: left;
-}
-
-.card-detail {
-  font-size: 14px;
-  margin: 2px;
-}
-
-.percentage {
-  font-size: 12px;
-  padding: 2px;
-}
-
-@media only screen and (max-width: 768px) {
-  .card {
-    width: 120px;
-    margin: 12px;
-  }
-  .flag-container {
-    height: 80px;
-  }
-  .flag {
-    height: 80px;
-    width: 120px;
-  }
-
-  .card-container {
-    padding-left: 8px;
-    padding-bottom: 8px;
-  }
-
-  .card-detail {
-    font-size: 12px;
-  }
-
-  .percentage {
-    font-size: 10px;
-  }
-}
-
-.card:hover {
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-}
-
-.error-msg {
-  color: red;
 }

@@ -1,0 +1,57 @@
+.country-page {
+  padding-bottom: 24px;
+  display: flex;
+}
+
+.full-flag {
+  flex: 50%;
+  margin-right: 12px;
+}
+
+.country-details {
+  flex: 50%;
+  text-align: left;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.full-flag-img {
+  max-width: 660px;
+}
+
+.country-detail {
+  font-size: 18px;
+  margin: 6px;
+}
+
+.border-countries {
+  display: flex;
+  font-size: 18px;
+  margin: 6px;
+  padding-top: 32px;
+}
+
+.border-countries-title {
+  flex: 25%;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.border-countries-list {
+  flex: 75%;
+}
+
+@media only screen and (max-width: 896px) {
+  .country-page {
+    flex-direction: column;
+  }
+  .full-flag {
+    flex: 100%;
+  }
+  .country-details {
+    flex: 100%;
+  }
+  .full-flag-img {
+    max-width: 100%;
+  }
+}

@@ -9,7 +9,12 @@ const Ranking = ({ countries, topN }) => {
   return (
     <div className="flex-container">
       {countries.slice(0, topN).map((country, index) => (
-        <ContryCard key={index} rank={index+1} country={country} totalDays={totalDays} />
+        <ContryCard
+          key={index}
+          rank={index + 1}
+          country={country}
+          totalDays={totalDays}
+        />
       ))}
     </div>
   );

@@ -8,6 +8,7 @@
     "react": "^16.14.0",
     "react-csv-reader": "^3.2.1",
     "react-dom": "^16.14.0",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.2",
     "react-simple-maps": "^2.3.0",
     "react-tooltip": "^4.2.14"
