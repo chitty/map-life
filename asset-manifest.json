@@ -1,22 +1,22 @@
 {
   "files": {
     "main.css": "/map-life/static/css/main.f2d7d368.chunk.css",
-    "main.js": "/map-life/static/js/main.6a877b71.chunk.js",
-    "main.js.map": "/map-life/static/js/main.6a877b71.chunk.js.map",
+    "main.js": "/map-life/static/js/main.0bc407cf.chunk.js",
+    "main.js.map": "/map-life/static/js/main.0bc407cf.chunk.js.map",
     "runtime-main.js": "/map-life/static/js/runtime-main.4b197211.js",
     "runtime-main.js.map": "/map-life/static/js/runtime-main.4b197211.js.map",
-    "static/js/2.a4c0fd3d.chunk.js": "/map-life/static/js/2.a4c0fd3d.chunk.js",
-    "static/js/2.a4c0fd3d.chunk.js.map": "/map-life/static/js/2.a4c0fd3d.chunk.js.map",
+    "static/js/2.967ea283.chunk.js": "/map-life/static/js/2.967ea283.chunk.js",
+    "static/js/2.967ea283.chunk.js.map": "/map-life/static/js/2.967ea283.chunk.js.map",
     "index.html": "/map-life/index.html",
     "static/css/main.f2d7d368.chunk.css.map": "/map-life/static/css/main.f2d7d368.chunk.css.map",
-    "static/js/2.a4c0fd3d.chunk.js.LICENSE.txt": "/map-life/static/js/2.a4c0fd3d.chunk.js.LICENSE.txt",
+    "static/js/2.967ea283.chunk.js.LICENSE.txt": "/map-life/static/js/2.967ea283.chunk.js.LICENSE.txt",
     "static/media/index.css": "/map-life/static/media/NunitoSans-SemiBold.662b8665.ttf",
     "static/media/loader.befd2ee9.gif": "/map-life/static/media/loader.befd2ee9.gif"
   },
   "entrypoints": [
     "static/js/runtime-main.4b197211.js",
-    "static/js/2.a4c0fd3d.chunk.js",
+    "static/js/2.967ea283.chunk.js",
     "static/css/main.f2d7d368.chunk.css",
-    "static/js/main.6a877b71.chunk.js"
+    "static/js/main.0bc407cf.chunk.js"
   ]
 }
