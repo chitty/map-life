@@ -19,7 +19,8 @@ const HomePage = () => {
   const [CSVFormatError, setCSVFormatError] = useState(null);
 
   useEffect(() => {
-    if (!data || data.length < 1) loadData(SampleData);
+    let dataLoaded = JSON.parse(localStorage.getItem("dataSet"));
+    if (!dataLoaded || dataLoaded.length < 1) loadData(SampleData);
   }, []);
 
   const setTopNCountries = (num) => {

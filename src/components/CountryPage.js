@@ -8,15 +8,15 @@ import "./CountryPage.css";
 
 const CountryPage = () => {
   let { iso3 } = useParams();
-  const url = `https://restcountries.eu/rest/v2/alpha/${iso3}`;
   const [loading, setLoading] = useState(false);
   const [country, setCountry] = useState(
     JSON.parse(localStorage.getItem(iso3)) || {}
   );
 
   useEffect(() => {
+    const url = `https://restcountries.eu/rest/v2/alpha/${iso3}`;
     const data = JSON.parse(localStorage.getItem("dataSet")) || [];
-    if ((!country && !country.name) || country.ISO3 !== iso3) {
+    if (!country.name || country.ISO3 !== iso3) {
       setLoading(true);
       fetch(url)
         .then((res) => res.json())
@@ -36,7 +36,7 @@ const CountryPage = () => {
           }
         );
     }
-  }, [iso3]);
+  }, [country.name, country.ISO3, iso3]);
 
   const details = country.name
     ? [
