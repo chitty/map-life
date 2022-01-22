@@ -10,7 +10,7 @@ import "../App.css";
 import "./HomePage.css";
 
 const HomePage = () => {
-  const API_URL = "https://restcountries.eu/rest/v2/alpha";
+  const API_URL = "https://restcountries.com/v2/alpha";
   const [content, setContent] = useState("");
   const [data, setData] = useState(
     JSON.parse(localStorage.getItem("dataSet")) || []
@@ -34,7 +34,7 @@ const HomePage = () => {
     }, true);
     if (valid) {
       const iso3 = data.reduce((acc, row) => {
-        return `${acc}${row.ISO3};`;
+        return `${acc}${row.ISO3},`;
       }, "");
       fetch(`${API_URL}?codes=${iso3}`)
         .then((res) => res.json())
