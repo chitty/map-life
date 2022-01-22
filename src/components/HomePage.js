@@ -6,11 +6,11 @@ import MapChart from "./MapChart";
 import Ranking from "./Ranking";
 import Buttons from "./Buttons";
 import { SampleData } from "../data/SampleData";
+import { API_URL } from "../data/Constants";
 import "../App.css";
 import "./HomePage.css";
 
 const HomePage = () => {
-  const API_URL = "https://restcountries.com/v2/alpha";
   const [content, setContent] = useState("");
   const [data, setData] = useState(
     JSON.parse(localStorage.getItem("dataSet")) || []
