@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getTime } from "../utils/getTime";
 import { CountryNameMapping } from "../data/CountryNameMapping";
+import { API_URL } from "../data/Constants";
 import Loading from "./Loading";
 import "../App.css";
 import "./CountryPage.css";
@@ -14,7 +15,7 @@ const CountryPage = () => {
   );
 
   useEffect(() => {
-    const url = `https://restcountries.eu/rest/v2/alpha/${iso3}`;
+    const url = `${API_URL}/${iso3}`;
     const data = JSON.parse(localStorage.getItem("dataSet")) || [];
     if (!country.name || country.ISO3 !== iso3) {
       setLoading(true);

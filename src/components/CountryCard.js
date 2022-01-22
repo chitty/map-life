@@ -2,11 +2,12 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 import { CountryISOMapping } from "../data/CountryISOMapping";
+import { FLAGS_URL } from "../data/Constants";
 import { getTime } from "../utils/getTime";
 import "../App.css";
 
 const CountryCard = ({ rank, country, totalDays }) => {
-  const flag_filename = `https://flagcdn.com/h240/${CountryISOMapping[
+  const flag_filename = `${FLAGS_URL}/${CountryISOMapping[
     country.ISO3
   ].toLowerCase()}.png`;
   return (
