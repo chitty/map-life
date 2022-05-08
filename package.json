@@ -5,7 +5,7 @@
   "private": false,
   "dependencies": {
     "d3-scale": "^4.0.2",
-    "react": "^17.0.2",
+    "react": "^18.1.0",
     "react-csv-reader": "^3.4.0",
     "react-dom": "^18.1.0",
     "react-router-dom": "^6.3.0",
