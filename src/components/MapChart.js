@@ -1,10 +1,10 @@
 import React, { memo } from "react";
 import { scaleLinear } from "d3-scale";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
-import { getTime } from "../utils/getTime"
+import { getTime } from "../utils/getTime";
 
 const geoUrl =
-  "https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-50m-simplified.json";
+  "https://raw.githubusercontent.com/chitty/map-life/master/data/world-50m-simplified.json";
 
 const colorScale = scaleLinear()
   .domain([0, 30, 100, 500, 7800])
