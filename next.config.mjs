@@ -8,6 +8,12 @@ const nextConfig = {
     unoptimized: true,
   },
   output: 'export',
+  // Enable build cache for faster rebuilds
+  experimental: {
+    turbotrace: {
+      memoryLimit: 4000 // Increase memory limit for better performance
+    }
+  }
 };
 
 export default nextConfig; 
