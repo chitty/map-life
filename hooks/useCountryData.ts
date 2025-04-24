@@ -39,7 +39,8 @@ export const useCountryData = create<CountryDataState>((set) => ({
     })),
   loadSampleData: async () => {
     try {
-      const response = await fetch('/sample_data.csv');
+      const basePath = process.env.NODE_ENV === 'production' ? '/map-life' : '';
+      const response = await fetch(`${basePath}/sample_data.csv`);
       const csvText = await response.text();
 
       Papa.parse(csvText, {
