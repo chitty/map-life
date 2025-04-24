@@ -8,11 +8,11 @@ const nextConfig = {
     unoptimized: true,
   },
   output: 'export',
-  // Enable build cache for faster rebuilds
+  // Disable server components for static export
   experimental: {
-    turbotrace: {
-      memoryLimit: 4000 // Increase memory limit for better performance
-    }
+    // These features are not compatible with static exports
+    serverActions: false,
+    serverComponents: false
   }
 };
 

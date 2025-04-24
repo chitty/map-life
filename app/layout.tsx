@@ -6,9 +6,20 @@ import Footer from '@/components/Footer'
 
 const inter = Inter({ subsets: ['latin'] })
 
+// Define the base path based on environment
+const basePath = process.env.NODE_ENV === 'production' ? '/map-life' : '';
+
 export const metadata: Metadata = {
   title: 'Map Life - Track Your Travels',
   description: 'Visualize where in the world you have been with an interactive map',
+  icons: {
+    icon: [
+      {
+        url: `${basePath}/favicon.ico`,
+        sizes: 'any',
+      }
+    ]
+  }
 }
 
 export default function RootLayout({
@@ -18,6 +29,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <link rel="icon" href={`${basePath}/favicon.ico`} />
+      </head>
       <body className={inter.className}>
         <div className="flex flex-col min-h-screen">
           <Navbar />
