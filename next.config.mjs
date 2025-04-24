@@ -8,11 +8,10 @@ const nextConfig = {
     unoptimized: true,
   },
   output: 'export',
-  // Disable server components for static export
-  experimental: {
-    // These features are not compatible with static exports
-    serverActions: false,
-    serverComponents: false
+  // Completely disable prefetching which causes the .txt?_rsc= requests
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
   }
 };
 

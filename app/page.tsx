@@ -1,3 +1,5 @@
+export const dynamic = 'force-static'
+
 import WorldMap from '@/features/map/WorldMap'
 import CSVUploader from '@/features/upload/CSVUploader'
 import StatsCounter from '@/features/map/StatsCounter'

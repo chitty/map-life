@@ -31,9 +31,10 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <head>
         <link rel="icon" href={`${basePath}/favicon.ico`} />
-        <script async defer src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
-        <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt=""
-          referrerPolicy="no-referrer-when-downgrade" /></noscript>
+        <script async defer data-no-preload src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
+        <noscript>
+          <img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerPolicy="no-referrer-when-downgrade" />
+        </noscript>
       </head>
       <body className={inter.className}>
         <div className="flex flex-col min-h-screen">
