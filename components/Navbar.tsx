@@ -5,6 +5,9 @@ import { Globe } from 'lucide-react'
 import Link from 'next/link'
 
 const Navbar = () => {
+  // Define the base path based on environment
+  const basePath = process.env.NODE_ENV === 'production' ? '/map-life' : '';
+
   return (
     <header className="border-b border-gray-800 py-3">
       <div className="container mx-auto flex items-center justify-between">
@@ -27,7 +30,7 @@ const Navbar = () => {
           </Link>
 
           <a
-            href="/sample_data.csv"
+            href={`${basePath}/sample_data.csv`}
             download
             className="text-sm text-muted-foreground hover:text-primary transition"
           >
