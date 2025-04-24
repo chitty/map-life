@@ -1,42 +1,45 @@
 {
   "name": "map-life",
-  "homepage": "https://chitty.github.io/map-life/",
-  "version": "0.1.1",
-  "private": false,
-  "dependencies": {
-    "d3-scale": "^4.0.2",
-    "react": "^18.2.0",
-    "react-csv-reader": "^4.0.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.6.1",
-    "react-scripts": "5.0.1",
-    "react-simple-maps": "^3.0.0",
-    "react-tooltip": "^4.5.0"
-  },
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "https://chitty.github.io/map-life",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "eject": "react-scripts eject",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "deploy": "next build && touch out/.nojekyll && gh-pages -d out"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "dependencies": {
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-dropdown-menu": "^2.0.6",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-toast": "^1.1.5",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "colord": "^2.9.3",
+    "lucide-react": "^0.356.0",
+    "next": "14.2.0",
+    "papaparse": "^5.4.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-simple-maps": "^3.0.0",
+    "tailwind-merge": "^2.6.0",
+    "tailwindcss-animate": "^1.0.7",
+    "zustand": "^4.5.2"
   },
   "devDependencies": {
-    "gh-pages": "^6.3.0"
+    "@types/node": "^20.11.30",
+    "@types/papaparse": "^5.3.14",
+    "@types/react": "^18.2.64",
+    "@types/react-dom": "^18.2.21",
+    "@types/react-simple-maps": "^3.0.4",
+    "autoprefixer": "^10.4.18",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.0",
+    "gh-pages": "^6.3.0",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.4.2"
   }
 }
