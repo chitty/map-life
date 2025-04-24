@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import {
   ComposableMap,
   Geographies,
@@ -29,6 +29,22 @@ const WorldMap = () => {
   const [debugMode, setDebugMode] = useState(false)
   const [countryCodesFound, setCountryCodesFound] = useState<string[]>([])
   const [mapLoaded, setMapLoaded] = useState(false)
+  const geographiesRef = useRef<any[]>([]);
+
+  // Collect all country codes
+  const collectCountryCodes = useCallback((geographies: any[]) => {
+    if (!geographies || geographies.length === 0) return;
+
+    const codes = geographies.map(geo => {
+      // First try to get the numeric code
+      const numericCode = geo.id || '';
+
+      // Then convert to alpha-3 for display and consistency
+      return convertNumericToAlpha3(numericCode);
+    }).filter(Boolean);
+
+    setCountryCodesFound(Array.from(new Set(codes)));
+  }, []);
 
   // Debug data structure
   useEffect(() => {
@@ -66,6 +82,13 @@ const WorldMap = () => {
     setMapLoaded(true);
   }, []);
 
+  // Collect country codes when map and geographies are loaded
+  useEffect(() => {
+    if (mapLoaded && countryCodesFound.length === 0 && geographiesRef.current.length > 0) {
+      collectCountryCodes(geographiesRef.current);
+    }
+  }, [mapLoaded, countryCodesFound.length, collectCountryCodes]);
+
   // Function to get country property safely
   const getCountryProperty = (geo: any, propName: string): string => {
     if (!geo || !geo.properties) return '';
@@ -95,21 +118,6 @@ const WorldMap = () => {
   const toggleDebugMode = () => {
     setDebugMode(!debugMode);
   };
-
-  // Collect all country codes
-  const collectCountryCodes = useCallback((geographies: any[]) => {
-    if (!geographies || geographies.length === 0) return;
-
-    const codes = geographies.map(geo => {
-      // First try to get the numeric code
-      const numericCode = geo.id || '';
-
-      // Then convert to alpha-3 for display and consistency
-      return convertNumericToAlpha3(numericCode);
-    }).filter(Boolean);
-
-    setCountryCodesFound(Array.from(new Set(codes)));
-  }, []);
 
   // Fix map display issue by directly matching with known country codes
   const getCountryData = (countryCode: string) => {
@@ -174,9 +182,9 @@ const WorldMap = () => {
               <ZoomableGroup zoom={1} minZoom={0.8} center={[0, 40]}>
                 <Geographies geography={geoUrl}>
                   {({ geographies }) => {
-                    // Collect country codes when map loads
-                    if (mapLoaded && countryCodesFound.length === 0) {
-                      collectCountryCodes(geographies);
+                    // Store geographies in a ref without triggering re-renders
+                    if (geographies.length > 0 && geographiesRef.current.length === 0) {
+                      geographiesRef.current = geographies;
                     }
 
                     return geographies.map((geo) => {
