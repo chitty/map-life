@@ -11,62 +11,10 @@ import { useCountryData } from '@/hooks/useCountryData'
 import MapLegend from './MapLegend'
 import CountryTooltip from './CountryTooltip'
 import { InfoIcon } from 'lucide-react'
+import { convertNumericToAlpha3, getCountryName, getCountryNameFromNumeric } from '@/lib/countryCodeMapping'
 
 // Use a publicly available, reliable topojson source
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"
-
-// Mapping of numeric codes to alpha-3 codes for common countries
-const numericToAlpha3: Record<string, string> = {
-  '840': 'USA', // United States
-  '826': 'GBR', // United Kingdom
-  '250': 'FRA', // France
-  '276': 'DEU', // Germany
-  '392': 'JPN', // Japan
-  '124': 'CAN', // Canada
-  '036': 'AUS', // Australia
-  '554': 'NZL', // New Zealand
-  '724': 'ESP', // Spain
-  '380': 'ITA', // Italy
-  '056': 'BEL', // Belgium
-  '528': 'NLD', // Netherlands
-  '756': 'CHE', // Switzerland
-  '752': 'SWE', // Sweden
-  '578': 'NOR', // Norway
-  '208': 'DNK', // Denmark
-  '246': 'FIN', // Finland
-  '040': 'AUT', // Austria
-  '372': 'IRL', // Ireland
-  '620': 'PRT', // Portugal
-  '300': 'GRC', // Greece
-  '616': 'POL', // Poland
-  '203': 'CZE', // Czech Republic
-  '348': 'HUN', // Hungary
-  '643': 'RUS', // Russia
-  '156': 'CHN', // China
-  '356': 'IND', // India
-  '076': 'BRA', // Brazil
-  '484': 'MEX', // Mexico
-  '710': 'ZAF', // South Africa
-  '032': 'ARG', // Argentina
-  '152': 'CHL', // Chile
-  '170': 'COL', // Colombia
-  '604': 'PER', // Peru
-  '360': 'IDN', // Indonesia
-  '458': 'MYS', // Malaysia
-  '764': 'THA', // Thailand
-  '704': 'VNM', // Vietnam
-  '608': 'PHL', // Philippines
-  '410': 'KOR', // South Korea
-  '158': 'TWN', // Taiwan
-  '344': 'HKG', // Hong Kong
-  '702': 'SGP', // Singapore
-  '784': 'ARE', // United Arab Emirates
-  '682': 'SAU', // Saudi Arabia
-  '376': 'ISR', // Israel
-  '792': 'TUR', // Turkey
-  '818': 'EGY', // Egypt
-  '504': 'MAR', // Morocco
-}
 
 interface TooltipInfo {
   countryName: string
@@ -148,39 +96,6 @@ const WorldMap = () => {
     setDebugMode(!debugMode);
   };
 
-  // Get country code standardized - adjust for common variations
-  const normalizeCountryCode = (code: string): string => {
-    // Skip empty values
-    if (!code) return '';
-
-    const standardCode = code.toUpperCase().trim();
-
-    // Convert numeric code to alpha-3 if possible
-    if (numericToAlpha3[standardCode]) {
-      return numericToAlpha3[standardCode];
-    }
-
-    // Handle special cases for common country codes
-    const codeMap: Record<string, string> = {
-      'USA': 'USA',    // United States
-      'GBR': 'GBR',    // United Kingdom
-      'GB': 'GBR',     // United Kingdom alternative
-      'UK': 'GBR',     // United Kingdom alternative
-      'FRA': 'FRA',    // France
-      'DEU': 'DEU',    // Germany
-      'GER': 'DEU',    // Germany alternative
-      'JPN': 'JPN',    // Japan
-      'CHN': 'CHN',    // China
-      'CAN': 'CAN',    // Canada
-      'AUS': 'AUS',    // Australia
-      'NZL': 'NZL',    // New Zealand
-      'ESP': 'ESP',    // Spain
-      'ITA': 'ITA',    // Italy
-    };
-
-    return codeMap[standardCode] || standardCode;
-  };
-
   // Collect all country codes
   const collectCountryCodes = useCallback((geographies: any[]) => {
     if (!geographies || geographies.length === 0) return;
@@ -190,7 +105,7 @@ const WorldMap = () => {
       const numericCode = geo.id || '';
 
       // Then convert to alpha-3 for display and consistency
-      return normalizeCountryCode(numericCode);
+      return convertNumericToAlpha3(numericCode);
     }).filter(Boolean);
 
     setCountryCodesFound(Array.from(new Set(codes)));
@@ -269,8 +184,8 @@ const WorldMap = () => {
                       const numericCode = geo.id || '';
 
                       // Convert to alpha-3 for display and matching with our data
-                      const countryCode = normalizeCountryCode(numericCode);
-                      const countryName = getCountryProperty(geo, 'NAME');
+                      const countryCode = convertNumericToAlpha3(numericCode);
+                      const countryName = getCountryProperty(geo, 'NAME') || getCountryNameFromNumeric(numericCode);
 
                       // Get visit data with more flexible matching
                       const visitData = getCountryData(countryCode);
