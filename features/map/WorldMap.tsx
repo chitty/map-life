@@ -168,10 +168,10 @@ const WorldMap = () => {
         ) : (
           <>
             <ComposableMap
-              projection="geoEqualEarth"
+              projection="geoMercator"
               className="w-full h-full"
             >
-              <ZoomableGroup zoom={1} center={[0, 0]}>
+              <ZoomableGroup zoom={1} minZoom={0.8} center={[0, 40]}>
                 <Geographies geography={geoUrl}>
                   {({ geographies }) => {
                     // Collect country codes when map loads
@@ -209,13 +209,14 @@ const WorldMap = () => {
                           onMouseEnter={(e) => {
                             // Always show tooltip in debug mode
                             if (debugMode || visitData.timeSpent > 0) {
+                              // Use mouse position directly - simplest approach
                               setTooltipInfo({
                                 countryName,
                                 countryCode,
                                 position: {
                                   x: e.clientX,
                                   y: e.clientY
-                                }
+                                },
                               })
                             }
                           }}
