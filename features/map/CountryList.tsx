@@ -5,6 +5,7 @@ import { CountryVisitData, useCountryData } from '@/hooks/useCountryData'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Search, Globe, ChevronDown, ChevronUp } from 'lucide-react'
 import { getCountryName, getCountryFlag, getContinent } from '@/lib/countryCodeMapping'
+import { formatTimeSpent } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
 // A simplified input component
@@ -47,6 +48,8 @@ const TabsTrigger = ({ value, className, children, onClick }: {
   </button>
 )
 
+// Format time spent function has been moved to lib/utils.ts
+
 const CountryList = () => {
   const { countryData } = useCountryData()
   const [searchTerm, setSearchTerm] = useState('')
@@ -74,6 +77,7 @@ const CountryList = () => {
         name: getCountryName(code),
         flag: getCountryFlag(code),
         timeSpent: data.timeSpent,
+        formattedTime: formatTimeSpent(data.timeSpent),
         visitCount: data.visitCount,
         continent: getContinent(code)
       }));
@@ -174,7 +178,7 @@ const CountryList = () => {
                       </span>
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {country.timeSpent} {country.timeSpent === 1 ? 'day' : 'days'}
+                      {country.formattedTime}
                     </div>
                   </div>
                 ))}
@@ -222,7 +226,7 @@ const CountryList = () => {
                               </span>
                             </div>
                             <div className="text-sm text-muted-foreground">
-                              {country.timeSpent} {country.timeSpent === 1 ? 'day' : 'days'}
+                              {country.formattedTime}
                             </div>
                           </div>
                         ))}

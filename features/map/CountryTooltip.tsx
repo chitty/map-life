@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { CountryVisitData } from '@/hooks/useCountryData'
+import { formatTimeSpent } from '@/lib/utils'
 import styles from './CountryTooltip.module.css'
 
 interface CountryTooltipProps {
@@ -33,16 +34,7 @@ const CountryTooltip = ({ countryName, countryCode, visitData, position }: Count
         {hasData ? (
           <>
             <div className={styles.dataRow}>
-              <span className={styles.dataLabel}>Visits:</span>
-              <span>{visitData.visitCount}</span>
-            </div>
-            <div className={styles.dataRow}>
-              <span className={styles.dataLabel}>Days Spent:</span>
-              <span>{visitData.timeSpent}</span>
-            </div>
-            <div className={styles.dataRow}>
-              <span className={styles.dataLabel}>Time Ratio:</span>
-              <span>{((visitData.timeSpent / 365) * 100).toFixed(1)}%</span>
+              <span>{formatTimeSpent(visitData.timeSpent)}</span>
             </div>
           </>
         ) : (
