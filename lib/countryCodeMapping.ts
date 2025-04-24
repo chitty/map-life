@@ -5,6 +5,8 @@
  * - numeric codes (used in the GeoJSON)
  * - alpha-3 codes (used in our data)
  * - country names (used for display)
+ * - alpha-2 codes (used for flag emojis)
+ * - continents (used for grouping)
  */
 
 // Mapping from numeric codes to alpha-3
@@ -498,6 +500,128 @@ export const alpha3ToName: Record<string, string> = {
   'ZMB': 'Zambia'
 };
 
+// Alpha-3 to Alpha-2 mapping for flag emojis
+export const alpha3ToAlpha2: Record<string, string> = {
+  'AFG': 'AF', 'ALB': 'AL', 'DZA': 'DZ', 'ASM': 'AS', 'AND': 'AD', 'AGO': 'AO', 'ATG': 'AG',
+  'AZE': 'AZ', 'ARG': 'AR', 'AUS': 'AU', 'AUT': 'AT', 'BHS': 'BS', 'BHR': 'BH', 'BGD': 'BD',
+  'ARM': 'AM', 'BRB': 'BB', 'BEL': 'BE', 'BMU': 'BM', 'BTN': 'BT', 'BOL': 'BO', 'BIH': 'BA',
+  'BWA': 'BW', 'BRA': 'BR', 'BLZ': 'BZ', 'SLB': 'SB', 'VGB': 'VG', 'BRN': 'BN', 'BGR': 'BG',
+  'MMR': 'MM', 'BDI': 'BI', 'BLR': 'BY', 'KHM': 'KH', 'CMR': 'CM', 'CAN': 'CA', 'CPV': 'CV',
+  'CYM': 'KY', 'CAF': 'CF', 'LKA': 'LK', 'TCD': 'TD', 'CHL': 'CL', 'CHN': 'CN', 'TWN': 'TW',
+  'COL': 'CO', 'COM': 'KM', 'MYT': 'YT', 'COG': 'CG', 'COD': 'CD', 'COK': 'CK', 'CRI': 'CR',
+  'HRV': 'HR', 'CUB': 'CU', 'CYP': 'CY', 'CZE': 'CZ', 'BEN': 'BJ', 'DNK': 'DK', 'DMA': 'DM',
+  'DOM': 'DO', 'ECU': 'EC', 'SLV': 'SV', 'GNQ': 'GQ', 'ETH': 'ET', 'ERI': 'ER', 'EST': 'EE',
+  'FRO': 'FO', 'FLK': 'FK', 'FJI': 'FJ', 'FIN': 'FI', 'ALA': 'AX', 'FRA': 'FR', 'GUF': 'GF',
+  'PYF': 'PF', 'DJI': 'DJ', 'GAB': 'GA', 'GEO': 'GE', 'GMB': 'GM', 'PSE': 'PS', 'DEU': 'DE',
+  'GHA': 'GH', 'GIB': 'GI', 'KIR': 'KI', 'GRC': 'GR', 'GRL': 'GL', 'GRD': 'GD', 'GLP': 'GP',
+  'GUM': 'GU', 'GTM': 'GT', 'GIN': 'GN', 'GUY': 'GY', 'HTI': 'HT', 'VAT': 'VA', 'HND': 'HN',
+  'HKG': 'HK', 'HUN': 'HU', 'ISL': 'IS', 'IND': 'IN', 'IDN': 'ID', 'IRN': 'IR', 'IRQ': 'IQ',
+  'IRL': 'IE', 'ISR': 'IL', 'ITA': 'IT', 'CIV': 'CI', 'JAM': 'JM', 'JPN': 'JP', 'KAZ': 'KZ',
+  'JOR': 'JO', 'KEN': 'KE', 'PRK': 'KP', 'KOR': 'KR', 'KWT': 'KW', 'KGZ': 'KG', 'LAO': 'LA',
+  'LBN': 'LB', 'LSO': 'LS', 'LVA': 'LV', 'LBR': 'LR', 'LBY': 'LY', 'LIE': 'LI', 'LTU': 'LT',
+  'LUX': 'LU', 'MAC': 'MO', 'MDG': 'MG', 'MWI': 'MW', 'MYS': 'MY', 'MDV': 'MV', 'MLI': 'ML',
+  'MLT': 'MT', 'MTQ': 'MQ', 'MRT': 'MR', 'MUS': 'MU', 'MEX': 'MX', 'MCO': 'MC', 'MNG': 'MN',
+  'MDA': 'MD', 'MNE': 'ME', 'MSR': 'MS', 'MAR': 'MA', 'MOZ': 'MZ', 'OMN': 'OM', 'NAM': 'NA',
+  'NRU': 'NR', 'NPL': 'NP', 'NLD': 'NL', 'CUW': 'CW', 'ABW': 'AW', 'SXM': 'SX', 'BES': 'BQ',
+  'NCL': 'NC', 'VUT': 'VU', 'NZL': 'NZ', 'NIC': 'NI', 'NER': 'NE', 'NGA': 'NG', 'NIU': 'NU',
+  'NFK': 'NF', 'NOR': 'NO', 'MNP': 'MP', 'UMI': 'UM', 'FSM': 'FM', 'MHL': 'MH', 'PLW': 'PW',
+  'PAK': 'PK', 'PAN': 'PA', 'PNG': 'PG', 'PRY': 'PY', 'PER': 'PE', 'PHL': 'PH', 'PCN': 'PN',
+  'POL': 'PL', 'PRT': 'PT', 'GNB': 'GW', 'TLS': 'TL', 'PRI': 'PR', 'QAT': 'QA', 'REU': 'RE',
+  'ROU': 'RO', 'RUS': 'RU', 'RWA': 'RW', 'BLM': 'BL', 'SHN': 'SH', 'KNA': 'KN', 'AIA': 'AI',
+  'LCA': 'LC', 'MAF': 'MF', 'SPM': 'PM', 'VCT': 'VC', 'SMR': 'SM', 'STP': 'ST', 'SAU': 'SA',
+  'SEN': 'SN', 'SRB': 'RS', 'SYC': 'SC', 'SLE': 'SL', 'SGP': 'SG', 'SVK': 'SK', 'VNM': 'VN',
+  'SVN': 'SI', 'SOM': 'SO', 'ZAF': 'ZA', 'ZWE': 'ZW', 'ESP': 'ES', 'SSD': 'SS', 'SDN': 'SD',
+  'ESH': 'EH', 'SUR': 'SR', 'SJM': 'SJ', 'SWZ': 'SZ', 'SWE': 'SE', 'CHE': 'CH', 'SYR': 'SY',
+  'TJK': 'TJ', 'THA': 'TH', 'TGO': 'TG', 'TKL': 'TK', 'TON': 'TO', 'TTO': 'TT', 'ARE': 'AE',
+  'TUN': 'TN', 'TUR': 'TR', 'TKM': 'TM', 'TCA': 'TC', 'TUV': 'TV', 'UGA': 'UG', 'UKR': 'UA',
+  'MKD': 'MK', 'EGY': 'EG', 'GBR': 'GB', 'GGY': 'GG', 'JEY': 'JE', 'IMN': 'IM', 'TZA': 'TZ',
+  'USA': 'US', 'VIR': 'VI', 'BFA': 'BF', 'URY': 'UY', 'UZB': 'UZ', 'VEN': 'VE', 'WLF': 'WF',
+  'WSM': 'WS', 'YEM': 'YE', 'ZMB': 'ZM', 'XKX': 'XK', // Kosovo is not officially in ISO 3166
+  'HMD': 'HM', 'SGS': 'GS', 'ATF': 'TF', 'IOT': 'IO' // Additional territories
+};
+
+// Continent mapping for countries (Alpha-3 codes)
+export const continentMapping: Record<string, string> = {
+  // North America
+  'USA': 'North America', 'CAN': 'North America', 'MEX': 'North America',
+  'GTM': 'North America', 'BLZ': 'North America', 'HND': 'North America',
+  'SLV': 'North America', 'NIC': 'North America', 'CRI': 'North America',
+  'PAN': 'North America', 'CUB': 'North America', 'JAM': 'North America',
+  'HTI': 'North America', 'DOM': 'North America', 'PRI': 'North America',
+  'BHS': 'North America', 'TTO': 'North America', 'BRB': 'North America',
+  'GRD': 'North America', 'VCT': 'North America', 'LCA': 'North America',
+  'DMA': 'North America', 'ATG': 'North America', 'KNA': 'North America',
+  'BMU': 'North America', 'GRL': 'North America', 'CYM': 'North America',
+  'TCA': 'North America', 'VGB': 'North America', 'VIR': 'North America',
+  'MTQ': 'North America', 'GLP': 'North America', 'AIA': 'North America',
+  'SPM': 'North America', 'MSR': 'North America', 'BLM': 'North America',
+  'MAF': 'North America', 'SXM': 'North America', 'CUW': 'North America',
+  'ABW': 'North America', 'BES': 'North America',
+
+  // South America
+  'COL': 'South America', 'VEN': 'South America', 'GUY': 'South America',
+  'SUR': 'South America', 'BRA': 'South America', 'ECU': 'South America',
+  'PER': 'South America', 'BOL': 'South America', 'CHL': 'South America',
+  'ARG': 'South America', 'PRY': 'South America', 'URY': 'South America',
+  'FLK': 'South America', 'GUF': 'South America',
+
+  // Europe
+  'GBR': 'Europe', 'FRA': 'Europe', 'DEU': 'Europe', 'ITA': 'Europe',
+  'ESP': 'Europe', 'PRT': 'Europe', 'NLD': 'Europe', 'BEL': 'Europe',
+  'CHE': 'Europe', 'AUT': 'Europe', 'POL': 'Europe', 'CZE': 'Europe',
+  'SVK': 'Europe', 'HUN': 'Europe', 'ROU': 'Europe', 'BGR': 'Europe',
+  'SRB': 'Europe', 'HRV': 'Europe', 'SVN': 'Europe', 'GRC': 'Europe',
+  'TUR': 'Europe', 'NOR': 'Europe', 'SWE': 'Europe', 'FIN': 'Europe',
+  'DNK': 'Europe', 'EST': 'Europe', 'LVA': 'Europe', 'LTU': 'Europe',
+  'IRL': 'Europe', 'ISL': 'Europe', 'UKR': 'Europe', 'BLR': 'Europe',
+  'RUS': 'Europe', 'MDA': 'Europe', 'MKD': 'Europe', 'ALB': 'Europe',
+  'BIH': 'Europe', 'MNE': 'Europe', 'XKX': 'Europe', 'LUX': 'Europe',
+  'MCO': 'Europe', 'VAT': 'Europe', 'LIE': 'Europe', 'SMR': 'Europe',
+  'AND': 'Europe', 'MLT': 'Europe', 'CYP': 'Europe', 'FRO': 'Europe',
+  'GIB': 'Europe', 'IMN': 'Europe', 'JEY': 'Europe', 'GGY': 'Europe',
+  'ALA': 'Europe', 'SJM': 'Europe',
+
+  // Asia
+  'CHN': 'Asia', 'JPN': 'Asia', 'KOR': 'Asia', 'PRK': 'Asia',
+  'IND': 'Asia', 'PAK': 'Asia', 'BGD': 'Asia', 'LKA': 'Asia',
+  'NPL': 'Asia', 'BTN': 'Asia', 'MMR': 'Asia', 'THA': 'Asia',
+  'LAO': 'Asia', 'VNM': 'Asia', 'KHM': 'Asia', 'MYS': 'Asia',
+  'SGP': 'Asia', 'IDN': 'Asia', 'PHL': 'Asia', 'TLS': 'Asia',
+  'BRN': 'Asia', 'TWN': 'Asia', 'HKG': 'Asia', 'MAC': 'Asia',
+  'MNG': 'Asia', 'SAU': 'Asia', 'ARE': 'Asia', 'QAT': 'Asia',
+  'KWT': 'Asia', 'BHR': 'Asia', 'OMN': 'Asia', 'YEM': 'Asia',
+  'IRQ': 'Asia', 'IRN': 'Asia', 'ISR': 'Asia', 'JOR': 'Asia',
+  'LBN': 'Asia', 'SYR': 'Asia', 'PSE': 'Asia', 'ARM': 'Asia',
+  'AZE': 'Asia', 'GEO': 'Asia', 'KAZ': 'Asia', 'UZB': 'Asia',
+  'TKM': 'Asia', 'TJK': 'Asia', 'KGZ': 'Asia', 'AFG': 'Asia',
+  'MDV': 'Asia',
+
+  // Africa
+  'MAR': 'Africa', 'DZA': 'Africa', 'TUN': 'Africa', 'LBY': 'Africa',
+  'EGY': 'Africa', 'SDN': 'Africa', 'SSD': 'Africa', 'MRT': 'Africa',
+  'MLI': 'Africa', 'NER': 'Africa', 'TCD': 'Africa', 'ERI': 'Africa',
+  'DJI': 'Africa', 'SOM': 'Africa', 'ETH': 'Africa', 'KEN': 'Africa',
+  'UGA': 'Africa', 'RWA': 'Africa', 'BDI': 'Africa', 'TZA': 'Africa',
+  'SEN': 'Africa', 'GMB': 'Africa', 'GNB': 'Africa', 'GIN': 'Africa',
+  'SLE': 'Africa', 'LBR': 'Africa', 'CIV': 'Africa', 'GHA': 'Africa',
+  'TGO': 'Africa', 'BEN': 'Africa', 'NGA': 'Africa', 'CMR': 'Africa',
+  'CAF': 'Africa', 'GNQ': 'Africa', 'GAB': 'Africa', 'COG': 'Africa',
+  'COD': 'Africa', 'AGO': 'Africa', 'ZMB': 'Africa', 'MWI': 'Africa',
+  'MOZ': 'Africa', 'ZWE': 'Africa', 'BWA': 'Africa', 'NAM': 'Africa',
+  'ZAF': 'Africa', 'LSO': 'Africa', 'SWZ': 'Africa', 'MDG': 'Africa',
+  'MUS': 'Africa', 'COM': 'Africa', 'SYC': 'Africa', 'CPV': 'Africa',
+  'STP': 'Africa', 'ESH': 'Africa', 'REU': 'Africa', 'MYT': 'Africa',
+  'SHN': 'Africa', 'BFA': 'Africa',
+
+  // Oceania
+  'AUS': 'Oceania', 'NZL': 'Oceania', 'PNG': 'Oceania', 'SLB': 'Oceania',
+  'VUT': 'Oceania', 'FJI': 'Oceania', 'TON': 'Oceania', 'WSM': 'Oceania',
+  'KIR': 'Oceania', 'FSM': 'Oceania', 'MHL': 'Oceania', 'PLW': 'Oceania',
+  'NRU': 'Oceania', 'TUV': 'Oceania', 'NCL': 'Oceania', 'PYF': 'Oceania',
+  'COK': 'Oceania', 'NIU': 'Oceania', 'TKL': 'Oceania', 'GUM': 'Oceania',
+  'ASM': 'Oceania', 'MNP': 'Oceania', 'WLF': 'Oceania', 'NFK': 'Oceania'
+};
+
 // Get country name from alpha-3 code
 export const getCountryName = (alpha3Code: string): string => {
   return alpha3ToName[alpha3Code] || alpha3Code;
@@ -512,4 +636,26 @@ export const convertNumericToAlpha3 = (numericCode: string): string => {
 export const getCountryNameFromNumeric = (numericCode: string): string => {
   const alpha3 = convertNumericToAlpha3(numericCode);
   return getCountryName(alpha3);
+};
+
+// Get country flag emoji from alpha-3 code
+export const getCountryFlag = (alpha3Code: string): string => {
+  if (!alpha3Code || alpha3Code.length !== 3) return '🏳️';
+
+  const alpha2 = alpha3ToAlpha2[alpha3Code] || '';
+  if (!alpha2) return '🏳️';
+
+  try {
+    // Convert alpha-2 country code to regional indicator symbols
+    // Each regional indicator symbol letter is 127397 code points after its respective uppercase ASCII letter
+    const codePoints = Array.from(alpha2).map(char => 127397 + char.charCodeAt(0));
+    return String.fromCodePoint(...codePoints);
+  } catch (e) {
+    return '🏳️';
+  }
+};
+
+// Get continent for a country based on alpha-3 code
+export const getContinent = (alpha3Code: string): string => {
+  return continentMapping[alpha3Code] || 'Other';
 }; 
