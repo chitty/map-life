@@ -1,24 +1,35 @@
 # Map Life
 
-An interactive visualization application showing where in the world you have been according to the submitted travel data.
+A interactive world map visualization to track your travels and time spent in different countries.
+See it running in https://chitty.github.io/map-life/.
 
 ## Features
 
 - Interactive world map visualization
-- CSV data upload for travel history
-- Color intensity reflects time spent in each country
-- Dark mode UI with modern design
+- Country list with time spent displayed
+- Continent-based filtering
+- Time display with years, months, and days
+- Sample data for demonstration
 
-## Technologies
+## Development
 
-- React 19.1
-- Next.js App Router
-- TypeScript
-- Tailwind CSS
-- shadcn/ui components
-- react-simple-maps
-- zustand for state management
-- papaparse for CSV parsing
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+```
+
+## Deployment to GitHub Pages
+
+This project is configured for easy deployment to GitHub Pages.
 
 ## Getting Started
 
@@ -51,10 +62,3 @@ FRA,45
 
 A sample CSV file is included at `/public/sample_data.csv` for testing.
 
-## Map Data
-
-The application uses a world map in GeoJSON format. The file should be placed at:
-`/public/world-countries.json`
-
-You can download a suitable file from:
-https://github.com/zcreativelabs/react-simple-maps/blob/master/topojson-maps/world-110m.json
