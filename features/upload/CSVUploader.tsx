@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { getCountryName } from '@/lib/countryCodeMapping'
 import { motion, AnimatePresence } from 'framer-motion'
+import confetti from 'canvas-confetti'
 
 const CSVUploader = () => {
   const [isUploading, setIsUploading] = useState(false)
@@ -27,13 +28,50 @@ const CSVUploader = () => {
     mapRef.current = document.querySelector('#map-section')
   }, [])
 
+  // Function to trigger confetti
+  const triggerConfetti = () => {
+    // Purple/pink colors that complement the blue theme
+    const confettiColors = ['#FF73FA', '#E040FB', '#D500F9', '#AA00FF', '#7C4DFF'];
+    const duration = 1.5 * 1000; // 1.5 seconds duration
+    const end = Date.now() + duration;
+
+    // Initial burst from bottom
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.7, x: 0.5 },
+      colors: confettiColors,
+    });
+
+    // Multiple bursts from different directions
+    setTimeout(() => {
+      // Left side burst
+      confetti({
+        particleCount: 50,
+        angle: 60,
+        spread: 50,
+        origin: { x: 0, y: 0.5 },
+        colors: confettiColors,
+      });
+
+      // Right side burst
+      confetti({
+        particleCount: 50,
+        angle: 120,
+        spread: 50,
+        origin: { x: 1, y: 0.5 },
+        colors: confettiColors,
+      });
+    }, 200);
+  };
+
   // Function to normalize country codes
   const normalizeCountryCode = (code: string): string => {
     if (!code) return '';
     return code.toUpperCase().trim();
   }
 
-  // Scroll to the map when data is loaded
+  // Scroll to the map and trigger confetti when data is loaded
   useEffect(() => {
     if (isSuccess && mapRef.current) {
       setTimeout(() => {
@@ -41,9 +79,14 @@ const CSVUploader = () => {
           behavior: 'smooth',
           block: 'start'
         })
-      }, 500) // Short delay to allow animations to complete
+
+        // Only trigger confetti for user uploads, not sample data
+        if (!isSampleData) {
+          triggerConfetti();
+        }
+      }, 500) // Restored to original faster scroll
     }
-  }, [isSuccess])
+  }, [isSuccess, isSampleData])
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
