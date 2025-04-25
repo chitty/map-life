@@ -8,14 +8,22 @@ import { getCountryName, getCountryFlag, getContinent } from '@/lib/countryCodeM
 import { formatTimeSpent } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTheme } from '@/lib/ThemeContext'
 
 // A simplified input component
-const Input = ({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) => (
-  <input
-    className={`flex h-9 w-full rounded-md border border-gray-700 bg-gray-800 px-3 py-1 text-sm text-gray-100 shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
-    {...props}
-  />
-)
+const Input = ({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) => {
+  const { theme } = useTheme()
+
+  return (
+    <input
+      className={`flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm transition-colors duration-100 file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 ${theme === 'dark'
+        ? 'border-gray-700 bg-gray-800 text-gray-100 placeholder:text-gray-500'
+        : 'border-gray-300 bg-white text-gray-900 placeholder:text-gray-400'
+        } ${className}`}
+      {...props}
+    />
+  )
+}
 
 // A simplified tabs component
 const Tabs = ({ defaultValue, children, onValueChange, className }: {
@@ -29,11 +37,18 @@ const Tabs = ({ defaultValue, children, onValueChange, className }: {
   </div>
 )
 
-const TabsList = ({ children, className }: { children: React.ReactNode; className?: string }) => (
-  <div className={`inline-flex h-9 items-center justify-center rounded-lg bg-gray-800 p-1 text-gray-400 ${className}`}>
-    {children}
-  </div>
-)
+const TabsList = ({ children, className }: { children: React.ReactNode; className?: string }) => {
+  const { theme } = useTheme()
+
+  return (
+    <div className={`inline-flex h-9 items-center justify-center rounded-lg p-1 transition-colors duration-100 ${theme === 'dark'
+      ? 'bg-gray-800 text-gray-400'
+      : 'bg-gray-200 text-gray-600'
+      } ${className}`}>
+      {children}
+    </div>
+  )
+}
 
 const TabsTrigger = ({ value, className, children, onClick }: {
   value: string;
@@ -53,17 +68,14 @@ const TabsTrigger = ({ value, className, children, onClick }: {
 
 // Animation variants
 const listItemVariants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: (custom: number) => ({
+  hidden: { opacity: 0 },
+  visible: {
     opacity: 1,
-    y: 0,
     transition: {
-      delay: custom * 0.03,
-      duration: 0.3,
-      ease: "easeOut"
+      duration: 0.1
     }
-  }),
-  exit: { opacity: 0, scale: 0.9, transition: { duration: 0.2 } }
+  },
+  exit: { opacity: 0, transition: { duration: 0.05 } }
 }
 
 const containerVariants = {
@@ -71,13 +83,14 @@ const containerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.05,
-      delayChildren: 0.1
+      duration: 0.15,
+      when: "beforeChildren"
     }
   }
 }
 
 const CountryList = () => {
+  const { theme } = useTheme()
   const { countryData } = useCountryData()
   const [searchTerm, setSearchTerm] = useState('')
   const [viewMode, setViewMode] = useState<'all' | 'continent'>('all')
@@ -142,8 +155,15 @@ const CountryList = () => {
     }));
   };
 
+  // Get hover background color based on theme
+  const getHoverBgColor = () => {
+    return theme === 'dark'
+      ? 'rgba(59, 130, 246, 0.08)'
+      : 'rgba(59, 130, 246, 0.05)';
+  };
+
   return (
-    <Card className="w-full">
+    <Card className="w-full transition-colors duration-100">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-medium">Countries Visited</h3>
@@ -167,14 +187,14 @@ const CountryList = () => {
             <TabsList className="w-full">
               <TabsTrigger
                 value="all"
-                className={`flex-1 ${viewMode === 'all' ? 'bg-blue-900/50 text-blue-300' : ''}`}
+                className={`flex-1 ${viewMode === 'all' ? 'bg-blue-900/50 text-blue-300 dark:bg-blue-900/50 dark:text-blue-300 bg-blue-500/50 text-blue-800' : ''}`}
                 onClick={() => setViewMode('all')}
               >
                 All Countries
               </TabsTrigger>
               <TabsTrigger
                 value="continent"
-                className={`flex-1 ${viewMode === 'continent' ? 'bg-blue-900/50 text-blue-300' : ''}`}
+                className={`flex-1 ${viewMode === 'continent' ? 'bg-blue-900/50 text-blue-300 dark:bg-blue-900/50 dark:text-blue-300 bg-blue-500/50 text-blue-800' : ''}`}
                 onClick={() => setViewMode('continent')}
               >
                 By Continent
@@ -196,151 +216,147 @@ const CountryList = () => {
           </motion.p>
         ) : (
           <div className="max-h-[400px] overflow-auto pr-2 custom-scrollbar">
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" key={theme}>
               {viewMode === 'all' ? (
                 // All countries view
                 <motion.div
                   className="space-y-1"
-                  key="all-countries"
+                  key={`all-countries-${theme}`}
                   variants={containerVariants}
                   initial="hidden"
                   animate="visible"
                   exit="hidden"
                 >
-                  <AnimatePresence>
-                    {(showAll ? processedCountries : processedCountries.slice(0, INITIAL_DISPLAY_COUNT)).map((country, index) => (
-                      <motion.div
-                        key={country.code}
-                        className="flex justify-between items-center py-2 border-b border-gray-800 hover:bg-gray-900/30 rounded px-2"
-                        custom={index}
-                        variants={listItemVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        layout
-                        whileHover={{ x: 3, backgroundColor: 'rgba(59, 130, 246, 0.08)' }}
-                      >
-                        <div className="flex items-center space-x-2">
-                          <motion.span
-                            className="text-xl"
-                            role="img"
-                            aria-label={`${country.name} flag`}
-                            initial={{ scale: 0.5, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            transition={{ delay: index * 0.05 + 0.1 }}
-                          >
-                            {country.flag}
-                          </motion.span>
-                          <span className="font-medium">
-                            {country.name}
-                          </span>
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {country.formattedTime}
-                        </div>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
+                  {(showAll ? processedCountries : processedCountries.slice(0, INITIAL_DISPLAY_COUNT)).map((country, index) => (
+                    <motion.div
+                      key={`${country.code}-${theme}`}
+                      className={`flex justify-between items-center py-2 border-b rounded px-2 ${theme === 'dark'
+                        ? 'border-gray-800 bg-transparent hover:bg-gray-900/30'
+                        : 'border-gray-200 bg-transparent hover:bg-gray-50'
+                        }`}
+                      custom={index}
+                      variants={listItemVariants}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      transition={{ duration: 0 }}
+                      whileHover={{ x: 3 }}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <motion.span
+                          className="text-xl"
+                          role="img"
+                          aria-label={`${country.name} flag`}
+                          initial={{ scale: 0.5, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: index * 0.05 + 0.1 }}
+                        >
+                          {country.flag}
+                        </motion.span>
+                        <span className="font-medium">
+                          {country.name}
+                        </span>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {country.formattedTime}
+                      </div>
+                    </motion.div>
+                  ))}
 
                   {processedCountries.length > INITIAL_DISPLAY_COUNT && (
                     <motion.div
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.3 }}
+                      className="flex justify-center mt-2"
                     >
                       <Button
-                        variant="ghost"
-                        className="w-full mt-2 text-blue-400 hover:text-blue-300 hover:bg-blue-900/20"
+                        variant="outline"
+                        size="sm"
                         onClick={() => setShowAll(!showAll)}
+                        className={`flex items-center space-x-1 ${theme === 'dark'
+                          ? 'border-gray-700 hover:bg-gray-800'
+                          : 'border-gray-300 hover:bg-gray-50'
+                          }`}
                       >
-                        {showAll ? 'Show Less' : `Show All (${processedCountries.length})`}
+                        <span>{showAll ? 'Show Less' : `Show All (${processedCountries.length})`}</span>
+                        {showAll ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                       </Button>
                     </motion.div>
                   )}
                 </motion.div>
               ) : (
-                // Continent view
+                // Continent view with theme in key
                 <motion.div
-                  className="space-y-3"
-                  key="continent-view"
-                  variants={containerVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
+                  className="space-y-4"
+                  key={`continent-view-${theme}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                 >
-                  <AnimatePresence>
-                    {Object.entries(countriesByContinent).map(([continent, countries], continentIndex) => (
-                      <motion.div
-                        key={continent}
-                        className="border border-gray-800 rounded-md overflow-hidden"
-                        layout
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: continentIndex * 0.1, duration: 0.4 }}
+                  {Object.entries(countriesByContinent).map(([continent, countries]) => (
+                    <div key={`${continent}-${theme}`} className="space-y-1">
+                      <button
+                        onClick={() => toggleContinent(continent)}
+                        className={`flex justify-between items-center w-full py-2 px-2 rounded font-medium text-sm transition-colors duration-100 ${theme === 'dark'
+                          ? 'bg-gray-800 hover:bg-gray-700'
+                          : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
+                          }`}
                       >
-                        <motion.div
-                          className="flex justify-between items-center px-3 py-2 bg-gray-900 cursor-pointer"
-                          onClick={() => toggleContinent(continent)}
-                          whileHover={{ backgroundColor: 'rgba(55, 65, 81, 0.8)' }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          <div className="font-medium flex items-center">
-                            <Globe className="h-4 w-4 mr-2 text-blue-400" />
-                            {continent} ({countries.length})
-                          </div>
+                        <div className="flex items-center space-x-2">
+                          <Globe className="h-3.5 w-3.5" />
+                          <span>{continent}</span>
+                          <span className="text-xs font-normal opacity-70">({countries.length})</span>
+                        </div>
+                        {expandedContinents[continent] ? (
+                          <ChevronUp className="h-4 w-4" />
+                        ) : (
+                          <ChevronDown className="h-4 w-4" />
+                        )}
+                      </button>
+
+                      <AnimatePresence key={`continent-${continent}-${theme}`}>
+                        {expandedContinents[continent] && (
                           <motion.div
-                            animate={{ rotate: expandedContinents[continent] ? 180 : 0 }}
+                            className="ml-2 space-y-1 pt-1"
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
                             transition={{ duration: 0.3 }}
                           >
-                            <ChevronDown className="h-4 w-4 text-gray-500" />
+                            {countries.map((country, index) => (
+                              <motion.div
+                                key={`${country.code}-${theme}`}
+                                className={`flex justify-between items-center py-2 border-b rounded px-2 ${theme === 'dark'
+                                  ? 'border-gray-800 bg-transparent hover:bg-gray-900/30'
+                                  : 'border-gray-200 bg-transparent hover:bg-gray-50'
+                                  }`}
+                                custom={index}
+                                variants={listItemVariants}
+                                initial="hidden"
+                                animate="visible"
+                                exit="exit"
+                                transition={{ duration: 0 }}
+                                whileHover={{ x: 3 }}
+                              >
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-xl" role="img" aria-label={`${country.name} flag`}>
+                                    {country.flag}
+                                  </span>
+                                  <span className="font-medium">
+                                    {country.name}
+                                  </span>
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                  {country.formattedTime}
+                                </div>
+                              </motion.div>
+                            ))}
                           </motion.div>
-                        </motion.div>
-
-                        <AnimatePresence>
-                          {expandedContinents[continent] && (
-                            <motion.div
-                              className="divide-y divide-gray-800"
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.3 }}
-                            >
-                              {countries.map((country, countryIndex) => (
-                                <motion.div
-                                  key={country.code}
-                                  className="flex justify-between items-center p-2 hover:bg-gray-900/30"
-                                  custom={countryIndex}
-                                  variants={listItemVariants}
-                                  initial="hidden"
-                                  animate="visible"
-                                  whileHover={{ x: 3, backgroundColor: 'rgba(59, 130, 246, 0.08)' }}
-                                >
-                                  <div className="flex items-center space-x-2">
-                                    <motion.span
-                                      className="text-xl"
-                                      role="img"
-                                      aria-label={`${country.name} flag`}
-                                      initial={{ scale: 0.5, opacity: 0 }}
-                                      animate={{ scale: 1, opacity: 1 }}
-                                      transition={{ delay: countryIndex * 0.03 + 0.2 }}
-                                    >
-                                      {country.flag}
-                                    </motion.span>
-                                    <span>
-                                      {country.name}
-                                    </span>
-                                  </div>
-                                  <div className="text-sm text-muted-foreground">
-                                    {country.formattedTime}
-                                  </div>
-                                </motion.div>
-                              ))}
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  ))}
                 </motion.div>
               )}
             </AnimatePresence>

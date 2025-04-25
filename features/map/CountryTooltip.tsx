@@ -5,6 +5,7 @@ import { CountryVisitData } from '@/hooks/useCountryData'
 import { formatTimeSpent } from '@/lib/utils'
 import { motion } from 'framer-motion'
 import styles from './CountryTooltip.module.css'
+import { useTheme } from '@/lib/ThemeContext'
 
 interface CountryTooltipProps {
   countryName: string
@@ -41,11 +42,16 @@ const tooltipVariants = {
 }
 
 const CountryTooltip = ({ countryName, countryCode, visitData, position }: CountryTooltipProps) => {
+  const { theme } = useTheme()
   const hasData = visitData && visitData.timeSpent > 0;
+
+  const tooltipTheme = theme === 'dark'
+    ? styles.tooltipDark
+    : styles.tooltipLight;
 
   return (
     <motion.div
-      className={styles.tooltip}
+      className={`${styles.tooltip} ${tooltipTheme}`}
       style={{
         left: position.x,
         top: position.y

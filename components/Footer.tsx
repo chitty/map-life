@@ -6,7 +6,7 @@ import { Github, Heart } from 'lucide-react'
 
 const Footer = () => {
   return (
-    <footer className="border-t border-gray-800 py-6 mt-auto">
+    <footer className="border-t border-gray-800 dark:border-gray-800 border-gray-200 py-6 mt-auto">
       <div className="container mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">

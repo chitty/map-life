@@ -13,9 +13,29 @@ import CountryTooltip from './CountryTooltip'
 import { InfoIcon } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { convertNumericToAlpha3, getCountryName, getCountryNameFromNumeric } from '@/lib/countryCodeMapping'
+import { useTheme } from '@/lib/ThemeContext'
 
 // Use a publicly available, reliable topojson source
 const geoUrl = "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"
+
+// Map color utilities based on theme
+const getMapColors = (theme: 'dark' | 'light', intensity: number) => {
+  if (theme === 'dark') {
+    return {
+      baseColor: intensity > 0 ? `rgba(65, 105, 225, ${0.3 + intensity * 0.7})` : "#141414",
+      hoverColor: intensity > 0 ? `rgba(45, 85, 205, ${0.6 + intensity * 0.4})` : "#333333",
+      pressedColor: intensity > 0 ? `rgba(25, 65, 185, ${0.7 + intensity * 0.3})` : "#444444",
+      strokeColor: "#FFFFFF",
+    }
+  } else {
+    return {
+      baseColor: intensity > 0 ? `rgba(65, 105, 225, ${0.3 + intensity * 0.7})` : "#f5f5f5",
+      hoverColor: intensity > 0 ? `rgba(45, 85, 205, ${0.6 + intensity * 0.4})` : "#e0e0e0",
+      pressedColor: intensity > 0 ? `rgba(25, 65, 185, ${0.7 + intensity * 0.3})` : "#d0d0d0",
+      strokeColor: "#666666",
+    }
+  }
+}
 
 interface TooltipInfo {
   countryName: string
@@ -36,6 +56,7 @@ const mapContainerVariants = {
 }
 
 const WorldMap = () => {
+  const { theme } = useTheme()
   const { countryData, isUsingSampleData, loadSampleData } = useCountryData()
   const [tooltipInfo, setTooltipInfo] = useState<TooltipInfo | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -220,7 +241,7 @@ const WorldMap = () => {
       animate="animate"
       variants={mapContainerVariants}
     >
-      <div className="relative w-full aspect-[16/9] border border-gray-700 rounded-lg overflow-hidden bg-gray-900">
+      <div className="relative w-full aspect-[16/9] border border-gray-700 rounded-lg overflow-hidden bg-gray-900 dark:bg-gray-900 bg-white">
         {error ? (
           <div className="absolute inset-0 flex items-center justify-center">
             <p className="text-red-400 text-sm">{error}</p>
@@ -254,6 +275,9 @@ const WorldMap = () => {
                         ? Math.min(1, visitData.timeSpent / 365)
                         : 0
 
+                      // Get theme-based colors
+                      const colors = getMapColors(theme, visitIntensity)
+
                       // In debug mode, log problematic countries
                       if (debugMode && countryCode && Object.keys(countryData).includes(countryCode)) {
                         console.log(`Country match: ${countryCode} - ${countryName} - Days: ${visitData.timeSpent}`);
@@ -263,8 +287,8 @@ const WorldMap = () => {
                         <Geography
                           key={geo.rsmKey || countryCode}
                           geography={geo}
-                          fill={visitIntensity > 0 ? `rgba(65, 105, 225, ${0.3 + visitIntensity * 0.7})` : "#141414"}
-                          stroke="#FFFFFF"
+                          fill={colors.baseColor}
+                          stroke={colors.strokeColor}
                           strokeWidth={0.3}
                           onMouseEnter={(e) => {
                             // Always show tooltip in debug mode
@@ -289,7 +313,7 @@ const WorldMap = () => {
                               transition: 'all 0.5s ease-in-out'
                             },
                             hover: {
-                              fill: visitIntensity > 0 ? `rgba(45, 85, 205, ${0.6 + visitIntensity * 0.4})` : "#333333",
+                              fill: colors.hoverColor,
                               outline: 'none',
                               cursor: 'pointer',
                               transform: visitIntensity > 0 ? 'translateY(-2px)' : 'none',
@@ -298,7 +322,7 @@ const WorldMap = () => {
                             },
                             pressed: {
                               outline: 'none',
-                              fill: visitIntensity > 0 ? `rgba(25, 65, 185, ${0.7 + visitIntensity * 0.3})` : "#444444",
+                              fill: colors.pressedColor,
                               transform: 'scale(0.98)',
                             }
                           }}
@@ -343,7 +367,10 @@ const WorldMap = () => {
             {/* Debug toggle button */}
             <button
               onClick={toggleDebugMode}
-              className="absolute bottom-2 right-2 bg-gray-800 hover:bg-gray-700 text-gray-300 py-1 px-2 rounded text-xs transition-colors duration-200"
+              className={`absolute bottom-2 right-2 py-1 px-2 rounded text-xs transition-colors duration-200 ${theme === 'dark'
+                ? 'bg-gray-800 hover:bg-gray-700 text-gray-300'
+                : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                }`}
             >
               {debugMode ? 'Debug On' : 'Debug Off'}
             </button>

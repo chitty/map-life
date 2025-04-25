@@ -3,13 +3,14 @@
 import React from 'react'
 import { Globe } from 'lucide-react'
 import Link from 'next/link'
+import ThemeSwitch from './ThemeSwitch'
 
 const Navbar = () => {
   // Define the base path based on environment
   const basePath = process.env.NODE_ENV === 'production' ? '/map-life' : '';
 
   return (
-    <header className="border-b border-gray-800 py-3">
+    <header className="border-b border-gray-800 dark:border-gray-800 border-gray-200 py-3">
       <div className="container mx-auto flex items-center justify-between">
         <Link
           href="/"
@@ -20,6 +21,8 @@ const Navbar = () => {
         </Link>
 
         <nav className="flex items-center space-x-6">
+          <ThemeSwitch />
+
           <Link
             href="https://github.com/chitty/map-life"
             target="_blank"
