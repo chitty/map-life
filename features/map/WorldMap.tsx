@@ -289,20 +289,20 @@ const WorldMap = () => {
                               transition: 'all 0.5s ease-in-out'
                             },
                             hover: {
-                              fill: visitIntensity > 0 ? `rgba(45, 85, 205, ${0.4 + visitIntensity * 0.6})` : "#333333",
+                              fill: visitIntensity > 0 ? `rgba(45, 85, 205, ${0.6 + visitIntensity * 0.4})` : "#333333",
                               outline: 'none',
                               cursor: 'pointer',
                               transform: visitIntensity > 0 ? 'translateY(-2px)' : 'none',
-                              stroke: visitIntensity > 0 ? '#FFF' : '#555',
-                              strokeWidth: visitIntensity > 0 ? 0.5 : 0.3,
+                              stroke: "transparent",
+                              filter: visitIntensity > 0 ? 'drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.5))' : 'none',
                             },
                             pressed: {
                               outline: 'none',
-                              fill: visitIntensity > 0 ? `rgba(25, 65, 185, ${0.5 + visitIntensity * 0.5})` : "#444444",
+                              fill: visitIntensity > 0 ? `rgba(25, 65, 185, ${0.7 + visitIntensity * 0.3})` : "#444444",
                               transform: 'scale(0.98)',
                             }
                           }}
-                          className={`transition-colors duration-700 ${isTransitioning ? 'opacity-80' : 'opacity-100'}`}
+                          className="transition-all duration-700"
                         />
                       )
                     });
