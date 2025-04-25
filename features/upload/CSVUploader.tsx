@@ -10,8 +10,10 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { getCountryName } from '@/lib/countryCodeMapping'
 import { motion, AnimatePresence } from 'framer-motion'
 import confetti from 'canvas-confetti'
+import { useTheme } from '@/lib/ThemeContext'
 
 const CSVUploader = () => {
+  const { theme } = useTheme()
   const [isUploading, setIsUploading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [fileName, setFileName] = useState<string | null>(null)
@@ -221,6 +223,25 @@ const CSVUploader = () => {
     }
   }
 
+  // Get appropriate border and background colors based on theme
+  const getUploadBoxClasses = () => {
+    if (error) {
+      return theme === 'dark'
+        ? 'border-red-700 bg-red-900/10'
+        : 'border-red-300 bg-red-50';
+    }
+
+    if (isSuccess) {
+      return theme === 'dark'
+        ? 'border-green-700 bg-green-900/10'
+        : 'border-green-300 bg-green-50';
+    }
+
+    return theme === 'dark'
+      ? 'border-gray-700 bg-gray-900/50 hover:border-blue-700 hover:bg-blue-900/10'
+      : 'border-gray-300 bg-gray-50 hover:border-blue-300 hover:bg-blue-50';
+  };
+
   return (
     <motion.div
       initial="initial"
@@ -236,10 +257,7 @@ const CSVUploader = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <motion.div
-            className={`flex items-center justify-center h-24 border-2 border-dashed rounded-md overflow-hidden relative transition-colors ${error ? 'border-red-700 bg-red-900/10' :
-              isSuccess ? 'border-green-700 bg-green-900/10' :
-                'border-gray-700 bg-gray-900/50 hover:border-blue-700 hover:bg-blue-900/10'
-              }`}
+            className={`flex items-center justify-center h-24 border-2 border-dashed rounded-md overflow-hidden relative transition-colors ${getUploadBoxClasses()}`}
             variants={uploadBoxVariants}
             initial="idle"
             whileHover={!isSuccess && !error ? "hover" : "idle"}
@@ -252,10 +270,12 @@ const CSVUploader = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: "spring", stiffness: 500, damping: 25 }}
               >
-                <div className="rounded-full bg-green-900/30 p-2">
-                  <Check className="h-5 w-5 text-green-400" />
+                <div className={`rounded-full p-2 ${theme === 'dark' ? 'bg-green-900/30' : 'bg-green-100'}`}>
+                  <Check className={`h-5 w-5 ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`} />
                 </div>
-                <span className="text-sm text-green-400">{fileName} uploaded successfully</span>
+                <span className={`text-sm ${theme === 'dark' ? 'text-green-400' : 'text-green-600'}`}>
+                  {fileName} uploaded successfully
+                </span>
               </motion.div>
             ) : error ? (
               <motion.div
@@ -264,10 +284,12 @@ const CSVUploader = () => {
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: "spring", stiffness: 500, damping: 25 }}
               >
-                <div className="rounded-full bg-red-900/30 p-2">
-                  <XCircle className="h-5 w-5 text-red-400" />
+                <div className={`rounded-full p-2 ${theme === 'dark' ? 'bg-red-900/30' : 'bg-red-100'}`}>
+                  <XCircle className={`h-5 w-5 ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`} />
                 </div>
-                <span className="text-sm text-red-400">Upload failed</span>
+                <span className={`text-sm ${theme === 'dark' ? 'text-red-400' : 'text-red-600'}`}>
+                  Upload failed
+                </span>
               </motion.div>
             ) : (
               <>
@@ -276,17 +298,17 @@ const CSVUploader = () => {
                   className="flex flex-col items-center justify-center cursor-pointer h-full w-full"
                 >
                   <motion.div
-                    className="rounded-full bg-blue-900/30 p-2 mb-2"
+                    className={`rounded-full p-2 mb-2 ${theme === 'dark' ? 'bg-blue-900/30' : 'bg-blue-100'}`}
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     {isUploading ? (
-                      <FileUp className="h-5 w-5 text-blue-400 animate-pulse" />
+                      <FileUp className={`h-5 w-5 animate-pulse ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
                     ) : (
-                      <Upload className="h-5 w-5 text-blue-400" />
+                      <Upload className={`h-5 w-5 ${theme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`} />
                     )}
                   </motion.div>
-                  <span className="text-sm text-center px-4">
+                  <span className={`text-sm text-center px-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                     {fileName ? fileName : "Click to browse or drag & drop"}
                   </span>
                 </label>
@@ -312,13 +334,16 @@ const CSVUploader = () => {
               >
                 <Alert
                   variant="destructive"
-                  className="border-l-4 border-l-red-500"
+                  className={`border-l-4 border-l-red-500 ${theme === 'dark'
+                    ? 'bg-red-950 text-red-200'
+                    : 'bg-red-50 text-red-800'
+                    }`}
                 >
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle className="flex items-center">Error</AlertTitle>
                   <AlertDescription>
                     <p className="mt-1">{error}</p>
-                    <p className="mt-2 text-xs text-red-300">
+                    <p className={`mt-2 text-xs ${theme === 'dark' ? 'text-red-300' : 'text-red-600'}`}>
                       Make sure your CSV file has the required columns: <span className="font-mono font-bold">country_code</span> and <span className="font-mono font-bold">visit_days</span>
                     </p>
                   </AlertDescription>
@@ -333,7 +358,10 @@ const CSVUploader = () => {
                 exit={{ opacity: 0, height: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
               >
-                <Alert className="bg-amber-900/20 text-amber-400 border-amber-800 border-l-4 border-l-amber-500">
+                <Alert className={`border-l-4 border-l-amber-500 ${theme === 'dark'
+                  ? 'bg-amber-900/20 text-amber-400 border-amber-800'
+                  : 'bg-amber-50 text-amber-800 border-amber-200'
+                  }`}>
                   <Info className="h-4 w-4" />
                   <AlertTitle>Important Notes</AlertTitle>
                   <AlertDescription>
@@ -354,7 +382,10 @@ const CSVUploader = () => {
                 exit={{ opacity: 0, height: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
               >
-                <Alert className="bg-green-900/20 text-green-400 border-green-800 border-l-4 border-l-green-500">
+                <Alert className={`border-l-4 border-l-green-500 ${theme === 'dark'
+                  ? 'bg-green-900/20 text-green-400 border-green-800'
+                  : 'bg-green-50 text-green-800 border-green-200'
+                  }`}>
                   <Check className="h-4 w-4" />
                   <AlertTitle>Success</AlertTitle>
                   <AlertDescription>
@@ -367,10 +398,10 @@ const CSVUploader = () => {
             )}
           </AnimatePresence>
         </CardContent>
-        <CardFooter className="flex justify-between text-xs text-gray-500">
+        <CardFooter className="flex justify-between">
           <div className="flex flex-col">
-            <span>Required format:</span>
-            <span className="font-mono mt-1">country_code, visit_days</span>
+            <span className={`text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>Required format:</span>
+            <span className={`font-mono mt-1 text-xs ${theme === 'dark' ? 'text-gray-500' : 'text-gray-600'}`}>country_code, visit_days</span>
           </div>
           <div className="flex space-x-2">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -378,7 +409,10 @@ const CSVUploader = () => {
                 variant="ghost"
                 size="sm"
                 onClick={loadSampleDataHandler}
-                className="text-blue-400 hover:text-blue-300"
+                className={`${theme === 'dark'
+                  ? 'text-blue-400 hover:text-blue-300 hover:bg-blue-900/20'
+                  : 'text-blue-600 hover:text-blue-700 hover:bg-blue-100'
+                  }`}
               >
                 Load Sample Data
               </Button>
@@ -395,7 +429,10 @@ const CSVUploader = () => {
                   variant="ghost"
                   size="sm"
                   onClick={resetFileInput}
-                  className="text-gray-400 hover:text-gray-300"
+                  className={`${theme === 'dark'
+                    ? 'text-gray-400 hover:text-gray-300 hover:bg-gray-800'
+                    : 'text-gray-600 hover:text-gray-700 hover:bg-gray-100'
+                    }`}
                 >
                   Upload Another
                 </Button>
