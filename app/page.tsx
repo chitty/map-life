@@ -16,7 +16,7 @@ export default function Home() {
         </p>
       </section>
 
-      <section className="mb-12">
+      <section className="mb-12" id="map-section">
         <WorldMap />
       </section>
 
