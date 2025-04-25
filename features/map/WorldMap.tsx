@@ -11,6 +11,7 @@ import { useCountryData } from '@/hooks/useCountryData'
 import MapLegend from './MapLegend'
 import CountryTooltip from './CountryTooltip'
 import { InfoIcon } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { convertNumericToAlpha3, getCountryName, getCountryNameFromNumeric } from '@/lib/countryCodeMapping'
 
 // Use a publicly available, reliable topojson source
@@ -22,6 +23,18 @@ interface TooltipInfo {
   position: { x: number; y: number }
 }
 
+// Animation variants
+const badgeVariants = {
+  initial: { opacity: 0, y: -10 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+  exit: { opacity: 0, y: -10, transition: { duration: 0.2 } }
+}
+
+const mapContainerVariants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { duration: 0.5 } },
+}
+
 const WorldMap = () => {
   const { countryData, isUsingSampleData, loadSampleData } = useCountryData()
   const [tooltipInfo, setTooltipInfo] = useState<TooltipInfo | null>(null)
@@ -30,6 +43,10 @@ const WorldMap = () => {
   const [countryCodesFound, setCountryCodesFound] = useState<string[]>([])
   const [mapLoaded, setMapLoaded] = useState(false)
   const geographiesRef = useRef<any[]>([]);
+  const prevCountryDataRef = useRef<typeof countryData>({});
+
+  // Track transitions when country data changes
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Collect all country codes
   const collectCountryCodes = useCallback((geographies: any[]) => {
@@ -52,6 +69,36 @@ const WorldMap = () => {
       console.log("CountryData:", countryData);
       console.log("CountryData keys:", Object.keys(countryData));
     }
+  }, [countryData]);
+
+  // Detect changes in country data to trigger transitions
+  useEffect(() => {
+    const prevKeys = Object.keys(prevCountryDataRef.current);
+    const currentKeys = Object.keys(countryData);
+
+    // If the keys are different or there are new values
+    if (
+      prevKeys.length !== currentKeys.length ||
+      currentKeys.some(key =>
+        !prevCountryDataRef.current[key] ||
+        prevCountryDataRef.current[key].timeSpent !== countryData[key].timeSpent
+      )
+    ) {
+      // Only trigger transition if we already had data before
+      if (prevKeys.length > 0) {
+        setIsTransitioning(true);
+
+        // Reset after transition completes
+        const timer = setTimeout(() => {
+          setIsTransitioning(false);
+        }, 800); // Slightly longer than the CSS transition
+
+        return () => clearTimeout(timer);
+      }
+    }
+
+    // Update ref with current data
+    prevCountryDataRef.current = { ...countryData };
   }, [countryData]);
 
   // Log all country codes found in map data
@@ -167,7 +214,12 @@ const WorldMap = () => {
   };
 
   return (
-    <div className="space-y-2">
+    <motion.div
+      className="space-y-2"
+      initial="initial"
+      animate="animate"
+      variants={mapContainerVariants}
+    >
       <div className="relative w-full aspect-[16/9] border border-gray-700 rounded-lg overflow-hidden bg-gray-900">
         {error ? (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -177,7 +229,7 @@ const WorldMap = () => {
           <>
             <ComposableMap
               projection="geoMercator"
-              className="w-full h-full"
+              className={`w-full h-full transition-opacity duration-300 ${isTransitioning ? 'opacity-80' : 'opacity-100'}`}
             >
               <ZoomableGroup zoom={1} minZoom={0.8} center={[0, 40]}>
                 <Geographies geography={geoUrl}>
@@ -234,16 +286,23 @@ const WorldMap = () => {
                           style={{
                             default: {
                               outline: 'none',
+                              transition: 'all 0.5s ease-in-out'
                             },
                             hover: {
                               fill: visitIntensity > 0 ? `rgba(45, 85, 205, ${0.4 + visitIntensity * 0.6})` : "#333333",
                               outline: 'none',
-                              cursor: 'pointer'
+                              cursor: 'pointer',
+                              transform: visitIntensity > 0 ? 'translateY(-2px)' : 'none',
+                              stroke: visitIntensity > 0 ? '#FFF' : '#555',
+                              strokeWidth: visitIntensity > 0 ? 0.5 : 0.3,
                             },
                             pressed: {
                               outline: 'none',
+                              fill: visitIntensity > 0 ? `rgba(25, 65, 185, ${0.5 + visitIntensity * 0.5})` : "#444444",
+                              transform: 'scale(0.98)',
                             }
                           }}
+                          className={`transition-colors duration-700 ${isTransitioning ? 'opacity-80' : 'opacity-100'}`}
                         />
                       )
                     });
@@ -252,26 +311,39 @@ const WorldMap = () => {
               </ZoomableGroup>
             </ComposableMap>
 
-            {/* Sample data indicator */}
-            {isUsingSampleData && (
-              <div className="absolute top-2 right-2 bg-blue-900/70 text-blue-100 py-1 px-3 rounded-full text-xs flex items-center shadow-md">
-                <InfoIcon className="h-3 w-3 mr-1" />
-                <span>Sample Data</span>
-              </div>
-            )}
+            {/* Data source indicators with animations */}
+            <AnimatePresence>
+              {isUsingSampleData && (
+                <motion.div
+                  className="absolute top-2 right-2 bg-blue-900/70 text-blue-100 py-1 px-3 rounded-full text-xs flex items-center shadow-md"
+                  variants={badgeVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                >
+                  <InfoIcon className="h-3 w-3 mr-1" />
+                  <span>Sample Data</span>
+                </motion.div>
+              )}
 
-            {/* User data indicator - show when there's data but it's not sample data */}
-            {!isUsingSampleData && Object.keys(countryData).length > 0 && (
-              <div className="absolute top-2 right-2 bg-emerald-900/70 text-emerald-100 py-1 px-3 rounded-full text-xs flex items-center shadow-md">
-                <InfoIcon className="h-3 w-3 mr-1" />
-                <span>User Data</span>
-              </div>
-            )}
+              {!isUsingSampleData && Object.keys(countryData).length > 0 && (
+                <motion.div
+                  className="absolute top-2 right-2 bg-emerald-900/70 text-emerald-100 py-1 px-3 rounded-full text-xs flex items-center shadow-md"
+                  variants={badgeVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                >
+                  <InfoIcon className="h-3 w-3 mr-1" />
+                  <span>Personal Data</span>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Debug toggle button */}
             <button
               onClick={toggleDebugMode}
-              className="absolute bottom-2 right-2 bg-gray-800 text-gray-300 py-1 px-2 rounded text-xs"
+              className="absolute bottom-2 right-2 bg-gray-800 hover:bg-gray-700 text-gray-300 py-1 px-2 rounded text-xs transition-colors duration-200"
             >
               {debugMode ? 'Debug On' : 'Debug Off'}
             </button>
@@ -288,7 +360,7 @@ const WorldMap = () => {
         )}
       </div>
       <MapLegend />
-    </div>
+    </motion.div>
   )
 }
 

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import Papa from 'papaparse'
 import { Upload, FileUp, Check, AlertCircle, Info, XCircle } from 'lucide-react'
 import { CountryVisitData, useCountryData } from '@/hooks/useCountryData'
@@ -8,6 +8,7 @@ import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
 import { getCountryName } from '@/lib/countryCodeMapping'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const CSVUploader = () => {
   const [isUploading, setIsUploading] = useState(false)
@@ -18,11 +19,31 @@ const CSVUploader = () => {
   const [isSampleData, setIsSampleData] = useState(false)
   const { setCountryData, loadSampleData } = useCountryData()
 
+  // For scrolling to the map when data is loaded
+  const mapRef = useRef<HTMLDivElement | null>(null)
+
+  // Find the map ref once after component mounts
+  useEffect(() => {
+    mapRef.current = document.querySelector('#map-section')
+  }, [])
+
   // Function to normalize country codes
   const normalizeCountryCode = (code: string): string => {
     if (!code) return '';
     return code.toUpperCase().trim();
   }
+
+  // Scroll to the map when data is loaded
+  useEffect(() => {
+    if (isSuccess && mapRef.current) {
+      setTimeout(() => {
+        mapRef.current?.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        })
+      }, 500) // Short delay to allow animations to complete
+    }
+  }, [isSuccess])
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -142,133 +163,205 @@ const CSVUploader = () => {
     setIsSampleData(false)
   }
 
+  // Animation variants
+  const cardVariants = {
+    initial: { y: 20, opacity: 0 },
+    animate: { y: 0, opacity: 1, transition: { duration: 0.4 } },
+  }
+
+  const uploadBoxVariants = {
+    idle: { scale: 1, boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)" },
+    hover: {
+      scale: 1.02,
+      boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+      transition: { type: "spring", stiffness: 400, damping: 10 }
+    }
+  }
+
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <h3 className="text-lg font-medium">Upload Travel Data</h3>
-        <p className="text-sm text-muted-foreground">
-          Upload a CSV file with country codes and visit days
-        </p>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div
-          className={`flex items-center justify-center h-24 border-2 border-dashed rounded-md overflow-hidden relative transition-colors ${error ? 'border-red-700 bg-red-900/10' :
-            isSuccess ? 'border-green-700 bg-green-900/10' :
-              'border-gray-700 bg-gray-900/50 hover:border-blue-700 hover:bg-blue-900/10'
-            }`}
-        >
-          {isSuccess ? (
-            <div className="flex flex-col items-center space-y-2">
-              <div className="rounded-full bg-green-900/30 p-2">
-                <Check className="h-5 w-5 text-green-400" />
-              </div>
-              <span className="text-sm text-green-400">{fileName} uploaded successfully</span>
-            </div>
-          ) : error ? (
-            <div className="flex flex-col items-center space-y-2">
-              <div className="rounded-full bg-red-900/30 p-2">
-                <XCircle className="h-5 w-5 text-red-400" />
-              </div>
-              <span className="text-sm text-red-400">Upload failed</span>
-            </div>
-          ) : (
-            <>
-              <label
-                htmlFor="csv-upload"
-                className="flex flex-col items-center justify-center cursor-pointer h-full w-full"
+    <motion.div
+      initial="initial"
+      animate="animate"
+      variants={cardVariants}
+    >
+      <Card className="w-full max-w-md">
+        <CardHeader>
+          <h3 className="text-lg font-medium">Upload Travel Data</h3>
+          <p className="text-sm text-muted-foreground">
+            Upload a CSV file with country codes and visit days
+          </p>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <motion.div
+            className={`flex items-center justify-center h-24 border-2 border-dashed rounded-md overflow-hidden relative transition-colors ${error ? 'border-red-700 bg-red-900/10' :
+              isSuccess ? 'border-green-700 bg-green-900/10' :
+                'border-gray-700 bg-gray-900/50 hover:border-blue-700 hover:bg-blue-900/10'
+              }`}
+            variants={uploadBoxVariants}
+            initial="idle"
+            whileHover={!isSuccess && !error ? "hover" : "idle"}
+            whileTap={{ scale: isSuccess || error ? 1 : 0.98 }}
+          >
+            {isSuccess ? (
+              <motion.div
+                className="flex flex-col items-center space-y-2"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 500, damping: 25 }}
               >
-                <div className="rounded-full bg-blue-900/30 p-2 mb-2">
-                  {isUploading ? (
-                    <FileUp className="h-5 w-5 text-blue-400 animate-pulse" />
-                  ) : (
-                    <Upload className="h-5 w-5 text-blue-400" />
-                  )}
+                <div className="rounded-full bg-green-900/30 p-2">
+                  <Check className="h-5 w-5 text-green-400" />
                 </div>
-                <span className="text-sm text-center px-4">
-                  {fileName ? fileName : "Click to browse or drag & drop"}
-                </span>
-              </label>
-              <input
-                id="csv-upload"
-                type="file"
-                accept=".csv"
-                onChange={handleFileUpload}
-                className="hidden"
-                aria-label="Upload CSV file"
-              />
-            </>
-          )}
-        </div>
+                <span className="text-sm text-green-400">{fileName} uploaded successfully</span>
+              </motion.div>
+            ) : error ? (
+              <motion.div
+                className="flex flex-col items-center space-y-2"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 500, damping: 25 }}
+              >
+                <div className="rounded-full bg-red-900/30 p-2">
+                  <XCircle className="h-5 w-5 text-red-400" />
+                </div>
+                <span className="text-sm text-red-400">Upload failed</span>
+              </motion.div>
+            ) : (
+              <>
+                <label
+                  htmlFor="csv-upload"
+                  className="flex flex-col items-center justify-center cursor-pointer h-full w-full"
+                >
+                  <motion.div
+                    className="rounded-full bg-blue-900/30 p-2 mb-2"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    {isUploading ? (
+                      <FileUp className="h-5 w-5 text-blue-400 animate-pulse" />
+                    ) : (
+                      <Upload className="h-5 w-5 text-blue-400" />
+                    )}
+                  </motion.div>
+                  <span className="text-sm text-center px-4">
+                    {fileName ? fileName : "Click to browse or drag & drop"}
+                  </span>
+                </label>
+                <input
+                  id="csv-upload"
+                  type="file"
+                  accept=".csv"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                  aria-label="Upload CSV file"
+                />
+              </>
+            )}
+          </motion.div>
 
-        {error && (
-          <Alert
-            variant="destructive"
-            className="animate-in fade-in-50 border-l-4 border-l-red-500"
-          >
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle className="flex items-center">Error</AlertTitle>
-            <AlertDescription>
-              <p className="mt-1">{error}</p>
-              <p className="mt-2 text-xs text-red-300">
-                Make sure your CSV file has the required columns: <span className="font-mono font-bold">country_code</span> and <span className="font-mono font-bold">visit_days</span>
-              </p>
-            </AlertDescription>
-          </Alert>
-        )}
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, y: -10 }}
+                animate={{ opacity: 1, height: 'auto', y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Alert
+                  variant="destructive"
+                  className="border-l-4 border-l-red-500"
+                >
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle className="flex items-center">Error</AlertTitle>
+                  <AlertDescription>
+                    <p className="mt-1">{error}</p>
+                    <p className="mt-2 text-xs text-red-300">
+                      Make sure your CSV file has the required columns: <span className="font-mono font-bold">country_code</span> and <span className="font-mono font-bold">visit_days</span>
+                    </p>
+                  </AlertDescription>
+                </Alert>
+              </motion.div>
+            )}
 
-        {warnings.length > 0 && isSuccess && (
-          <Alert className="bg-amber-900/20 text-amber-400 border-amber-800 border-l-4 border-l-amber-500 animate-in fade-in-50">
-            <Info className="h-4 w-4" />
-            <AlertTitle>Important Notes</AlertTitle>
-            <AlertDescription>
-              <ul className="list-disc list-inside text-sm mt-1 space-y-1">
-                {warnings.map((warning, index) => (
-                  <li key={index}>{warning}</li>
-                ))}
-              </ul>
-            </AlertDescription>
-          </Alert>
-        )}
+            {warnings.length > 0 && isSuccess && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, y: -10 }}
+                animate={{ opacity: 1, height: 'auto', y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Alert className="bg-amber-900/20 text-amber-400 border-amber-800 border-l-4 border-l-amber-500">
+                  <Info className="h-4 w-4" />
+                  <AlertTitle>Important Notes</AlertTitle>
+                  <AlertDescription>
+                    <ul className="list-disc list-inside text-sm mt-1 space-y-1">
+                      {warnings.map((warning, index) => (
+                        <li key={index}>{warning}</li>
+                      ))}
+                    </ul>
+                  </AlertDescription>
+                </Alert>
+              </motion.div>
+            )}
 
-        {isSuccess && !warnings.length && (
-          <Alert className="bg-green-900/20 text-green-400 border-green-800 border-l-4 border-l-green-500 animate-in fade-in-50">
-            <Check className="h-4 w-4" />
-            <AlertTitle>Success</AlertTitle>
-            <AlertDescription>
-              {isSampleData
-                ? "Sample travel data has been loaded and is now displayed on the map."
-                : "Your travel data has been successfully imported and is now displayed on the map."}
-            </AlertDescription>
-          </Alert>
-        )}
-      </CardContent>
-      <CardFooter className="flex justify-between text-xs text-gray-500">
-        <div className="flex flex-col">
-          <span>Required format:</span>
-          <span className="font-mono mt-1">country_code, visit_days</span>
-        </div>
-        <div className="flex space-x-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={loadSampleDataHandler}
-            className="text-blue-400 hover:text-blue-300"
-          >
-            Load Sample Data
-          </Button>
-          {(isSuccess || error) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={resetFileInput}
-              className="text-gray-400 hover:text-gray-300"
-            >
-              Upload Another
-            </Button>
-          )}
-        </div>
-      </CardFooter>
-    </Card>
+            {isSuccess && !warnings.length && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, y: -10 }}
+                animate={{ opacity: 1, height: 'auto', y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Alert className="bg-green-900/20 text-green-400 border-green-800 border-l-4 border-l-green-500">
+                  <Check className="h-4 w-4" />
+                  <AlertTitle>Success</AlertTitle>
+                  <AlertDescription>
+                    {isSampleData
+                      ? "Sample travel data has been loaded and is now displayed on the map."
+                      : "Your travel data has been successfully imported and is now displayed on the map."}
+                  </AlertDescription>
+                </Alert>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </CardContent>
+        <CardFooter className="flex justify-between text-xs text-gray-500">
+          <div className="flex flex-col">
+            <span>Required format:</span>
+            <span className="font-mono mt-1">country_code, visit_days</span>
+          </div>
+          <div className="flex space-x-2">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={loadSampleDataHandler}
+                className="text-blue-400 hover:text-blue-300"
+              >
+                Load Sample Data
+              </Button>
+            </motion.div>
+            {(isSuccess || error) && (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={resetFileInput}
+                  className="text-gray-400 hover:text-gray-300"
+                >
+                  Upload Another
+                </Button>
+              </motion.div>
+            )}
+          </div>
+        </CardFooter>
+      </Card>
+    </motion.div>
   )
 }
 
