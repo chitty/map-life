@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
+import Image from 'next/image'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -33,7 +34,14 @@ export default function RootLayout({
         <link rel="icon" href={`${basePath}/favicon.ico`} />
         <script async defer data-no-preload src="https://scripts.simpleanalyticscdn.com/latest.js"></script>
         <noscript>
-          <img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerPolicy="no-referrer-when-downgrade" />
+          <Image
+            src="https://queue.simpleanalyticscdn.com/noscript.gif"
+            alt="Analytics"
+            referrerPolicy="no-referrer-when-downgrade"
+            width={1}
+            height={1}
+            unoptimized
+          />
         </noscript>
       </head>
       <body className={inter.className}>
