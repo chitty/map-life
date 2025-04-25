@@ -11,7 +11,7 @@ export default function Home() {
       <section className="mb-12 text-center">
         <h1 className="text-4xl font-bold mb-4">Map Your Travels</h1>
         <p className="text-muted-foreground max-w-2xl mx-auto">
-          Visualize where in the world you've been and for how long with an interactive map.
+          Visualize where in the world you&apos;ve been and for how long with an interactive map.
           Upload your travel data to see it come to life.
         </p>
       </section>
