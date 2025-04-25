@@ -2,15 +2,20 @@
 
 import React, { useState } from 'react'
 import Papa from 'papaparse'
-import { Upload, FileUp, Check } from 'lucide-react'
+import { Upload, FileUp, Check, AlertCircle, Info, XCircle } from 'lucide-react'
 import { CountryVisitData, useCountryData } from '@/hooks/useCountryData'
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'
+import { getCountryName } from '@/lib/countryCodeMapping'
 
 const CSVUploader = () => {
   const [isUploading, setIsUploading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [fileName, setFileName] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [warnings, setWarnings] = useState<string[]>([])
+  const [isSampleData, setIsSampleData] = useState(false)
   const { setCountryData, loadSampleData } = useCountryData()
 
   // Function to normalize country codes
@@ -25,39 +30,90 @@ const CSVUploader = () => {
 
     setIsUploading(true)
     setIsSuccess(false)
+    setError(null)
+    setWarnings([])
     setFileName(file.name)
+    setIsSampleData(false)
 
     Papa.parse(file, {
       header: true,
       complete: (results) => {
         const parsedData: Record<string, CountryVisitData> = {}
+        const newWarnings: string[] = []
 
-        results.data.forEach((row: any) => {
-          if (row.country_code && row.visit_days) {
-            const countryCode = normalizeCountryCode(row.country_code)
-            const days = parseInt(row.visit_days, 10) || 0
+        // Check for required columns
+        const requiredColumns = ['country_code', 'visit_days']
+        const missingColumns = requiredColumns.filter(col => !results.meta.fields?.includes(col))
 
-            if (!parsedData[countryCode]) {
-              parsedData[countryCode] = {
-                visitCount: 1,
-                timeSpent: days
-              }
-            } else {
-              parsedData[countryCode].visitCount += 1
-              parsedData[countryCode].timeSpent += days
+        if (missingColumns.length > 0) {
+          setError(`The CSV file is missing required columns: ${missingColumns.join(', ')}`)
+          setIsUploading(false)
+          return
+        }
+
+        // Check if there's any data
+        if (results.data.length === 0) {
+          setError('The CSV file appears to be empty. Please upload a file with travel data.')
+          setIsUploading(false)
+          return
+        }
+
+        // Process each row
+        let rowErrors = 0
+        results.data.forEach((row: any, index: number) => {
+          if (!row.country_code) {
+            rowErrors++
+            return
+          }
+
+          const countryCode = normalizeCountryCode(row.country_code)
+          let days = parseInt(row.visit_days, 10) || 0
+
+          // Handle negative visit days
+          if (days < 0) {
+            const countryName = getCountryName(countryCode) || countryCode
+            newWarnings.push(`${countryName}: Negative visit days (${days}) set to 0`)
+            days = 0
+          }
+
+          if (!parsedData[countryCode]) {
+            parsedData[countryCode] = {
+              visitCount: 1,
+              timeSpent: days
             }
+          } else {
+            parsedData[countryCode].visitCount += 1
+            parsedData[countryCode].timeSpent += days
           }
         })
 
+        // Handle the case where all rows had errors
+        if (Object.keys(parsedData).length === 0) {
+          setError('No valid country data found in the CSV file. Please check the format.')
+          setIsUploading(false)
+          return
+        }
+
+        // Log warnings if some rows had errors
+        if (rowErrors > 0) {
+          newWarnings.push(`${rowErrors} row(s) skipped due to missing country codes`)
+        }
+
         console.log("Parsed CSV data:", parsedData);
+
+        // Set warnings if any
+        if (newWarnings.length > 0) {
+          setWarnings(newWarnings)
+        }
 
         // Set isUserUploaded to false to indicate this is user data
         setCountryData(parsedData, false)
         setIsUploading(false)
         setIsSuccess(true)
       },
-      error: (error) => {
-        console.error("CSV parsing error:", error);
+      error: (parseError) => {
+        console.error("CSV parsing error:", parseError);
+        setError(`Failed to parse CSV: ${parseError.message}`)
         setIsUploading(false)
         setIsSuccess(false)
       }
@@ -67,7 +123,10 @@ const CSVUploader = () => {
   const loadSampleDataHandler = () => {
     setIsUploading(true)
     setIsSuccess(false)
+    setError(null)
+    setWarnings([])
     setFileName("sample_data.csv")
+    setIsSampleData(true)
 
     loadSampleData().then(() => {
       setIsUploading(false)
@@ -78,6 +137,9 @@ const CSVUploader = () => {
   const resetFileInput = () => {
     setFileName(null)
     setIsSuccess(false)
+    setError(null)
+    setWarnings([])
+    setIsSampleData(false)
   }
 
   return (
@@ -88,14 +150,26 @@ const CSVUploader = () => {
           Upload a CSV file with country codes and visit days
         </p>
       </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-center h-24 border-2 border-dashed border-gray-700 rounded-md bg-gray-900/50 overflow-hidden relative">
+      <CardContent className="space-y-4">
+        <div
+          className={`flex items-center justify-center h-24 border-2 border-dashed rounded-md overflow-hidden relative transition-colors ${error ? 'border-red-700 bg-red-900/10' :
+            isSuccess ? 'border-green-700 bg-green-900/10' :
+              'border-gray-700 bg-gray-900/50 hover:border-blue-700 hover:bg-blue-900/10'
+            }`}
+        >
           {isSuccess ? (
             <div className="flex flex-col items-center space-y-2">
               <div className="rounded-full bg-green-900/30 p-2">
                 <Check className="h-5 w-5 text-green-400" />
               </div>
               <span className="text-sm text-green-400">{fileName} uploaded successfully</span>
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center space-y-2">
+              <div className="rounded-full bg-red-900/30 p-2">
+                <XCircle className="h-5 w-5 text-red-400" />
+              </div>
+              <span className="text-sm text-red-400">Upload failed</span>
             </div>
           ) : (
             <>
@@ -125,9 +199,54 @@ const CSVUploader = () => {
             </>
           )}
         </div>
+
+        {error && (
+          <Alert
+            variant="destructive"
+            className="animate-in fade-in-50 border-l-4 border-l-red-500"
+          >
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle className="flex items-center">Error</AlertTitle>
+            <AlertDescription>
+              <p className="mt-1">{error}</p>
+              <p className="mt-2 text-xs text-red-300">
+                Make sure your CSV file has the required columns: <span className="font-mono font-bold">country_code</span> and <span className="font-mono font-bold">visit_days</span>
+              </p>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {warnings.length > 0 && isSuccess && (
+          <Alert className="bg-amber-900/20 text-amber-400 border-amber-800 border-l-4 border-l-amber-500 animate-in fade-in-50">
+            <Info className="h-4 w-4" />
+            <AlertTitle>Important Notes</AlertTitle>
+            <AlertDescription>
+              <ul className="list-disc list-inside text-sm mt-1 space-y-1">
+                {warnings.map((warning, index) => (
+                  <li key={index}>{warning}</li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {isSuccess && !warnings.length && (
+          <Alert className="bg-green-900/20 text-green-400 border-green-800 border-l-4 border-l-green-500 animate-in fade-in-50">
+            <Check className="h-4 w-4" />
+            <AlertTitle>Success</AlertTitle>
+            <AlertDescription>
+              {isSampleData
+                ? "Sample travel data has been loaded and is now displayed on the map."
+                : "Your travel data has been successfully imported and is now displayed on the map."}
+            </AlertDescription>
+          </Alert>
+        )}
       </CardContent>
       <CardFooter className="flex justify-between text-xs text-gray-500">
-        <span>Format: country_code, visit_days</span>
+        <div className="flex flex-col">
+          <span>Required format:</span>
+          <span className="font-mono mt-1">country_code, visit_days</span>
+        </div>
         <div className="flex space-x-2">
           <Button
             variant="ghost"
@@ -137,8 +256,13 @@ const CSVUploader = () => {
           >
             Load Sample Data
           </Button>
-          {isSuccess && (
-            <Button variant="ghost" size="sm" onClick={resetFileInput}>
+          {(isSuccess || error) && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={resetFileInput}
+              className="text-gray-400 hover:text-gray-300"
+            >
               Upload Another
             </Button>
           )}
