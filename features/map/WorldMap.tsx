@@ -260,6 +260,14 @@ const WorldMap = () => {
               </div>
             )}
 
+            {/* User data indicator - show when there's data but it's not sample data */}
+            {!isUsingSampleData && Object.keys(countryData).length > 0 && (
+              <div className="absolute top-2 right-2 bg-emerald-900/70 text-emerald-100 py-1 px-3 rounded-full text-xs flex items-center shadow-md">
+                <InfoIcon className="h-3 w-3 mr-1" />
+                <span>User Data</span>
+              </div>
+            )}
+
             {/* Debug toggle button */}
             <button
               onClick={toggleDebugMode}
